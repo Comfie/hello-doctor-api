@@ -25,6 +25,7 @@
   <ItemGroup>
     <Folder Include="Authentications\Queries\" />
     <Folder Include="Authentications\Updates\" />
+    <Folder Include="Pharmacies\" />
   </ItemGroup>
 
 </Project>

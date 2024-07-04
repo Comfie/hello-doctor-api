@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IUser, CurrentUser>();
         services.AddScoped<IDateTimeService, DateTimeService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddHttpClient<ISmsService, SmsService>();
 
         services.AddHttpContextAccessor();
 

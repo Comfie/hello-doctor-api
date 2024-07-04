@@ -2,7 +2,6 @@
 using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Domain.Entities;
 using ApiBaseTemplate.Domain.Entities.Auth;
-using ApiBaseTemplate.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +13,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
 
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
     public DbSet<OneTimePin> OneTimePins => Set<OneTimePin>();
+    public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
+    public DbSet<Pharmacy> Pharmacies => Set<Pharmacy>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

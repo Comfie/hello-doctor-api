@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "ApiBaseTemplate.Web": {
+    "Web": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "https://localhost:5001/swagger",

@@ -3,6 +3,7 @@ using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Application.Common.Models.Settings;
 using ApiBaseTemplate.Domain.Constants;
 using ApiBaseTemplate.Domain.Entities.Auth;
+using ApiBaseTemplate.Domain.Repositories;
 using ApiBaseTemplate.Infrastructure.Data;
 using ApiBaseTemplate.Infrastructure.Data.Interceptors;
 using ApiBaseTemplate.Infrastructure.Identity;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.Configure<AppSettings>(configuration.GetSection(AppSettings.Section));
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         var dataSourceBuilder = new NpgsqlDataSourceBuilder(configuration.GetConnectionString("DefaultConnection"));
 

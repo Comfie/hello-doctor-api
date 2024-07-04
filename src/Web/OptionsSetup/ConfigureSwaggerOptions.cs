@@ -55,9 +55,9 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         var info = new OpenApiInfo
         {
-            Title = "Base Template Api",
-            Version = $"Base Template Api {description.ApiVersion.ToString()}",
-            Description = "Base Template Api For All Projects."
+            Title = "Hello Doctor Api",
+            Version = $"Hello Doctor Api {description.ApiVersion.ToString()}",
+            Description = "Api For Hello Doctor."
         };
         return info;
     }

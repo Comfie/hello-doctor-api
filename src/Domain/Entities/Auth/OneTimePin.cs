@@ -1,8 +1,7 @@
 ﻿namespace ApiBaseTemplate.Domain.Entities.Auth;
 
-public class OneTimePin
+public class OneTimePin : BaseAuditableEntity
 {
-    public int Id { get; set; }
     public int Counter { get; set; }
     public string? UserId { get; set; }
     public ApplicationUser? User { get; set; }
