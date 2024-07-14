@@ -2,7 +2,7 @@
 using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Commands.GetBeneficiaries;
+namespace ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiaries;
 
 public record GetBeneficiariesCommand : IRequest<Result<List<BeneficiaryResponse>>>
 {

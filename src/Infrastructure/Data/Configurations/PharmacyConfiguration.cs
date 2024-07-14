@@ -42,5 +42,9 @@ public class PharmacyConfiguration : IEntityTypeConfiguration<Pharmacy>
         builder
             .Property(p => p.IsActive)
             .HasDefaultValue(true);
+        
+        builder
+            .Property(p => p.IsDeleted)
+            .HasDefaultValue(false);
     }
 }

@@ -1,10 +1,10 @@
 using ApiBaseTemplate.Application.Beneficiaries.Commands.CreateBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Commands.DeleteBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Commands.GetBeneficiaries;
-using ApiBaseTemplate.Application.Beneficiaries.Commands.GetBeneficiariesByMemberId;
-using ApiBaseTemplate.Application.Beneficiaries.Commands.GetBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Commands.UpdateBeneficiary;
 using ApiBaseTemplate.Application.Beneficiaries.Models;
+using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiaries;
+using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMemberId;
+using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiary;
+using ApiBaseTemplate.Application.Beneficiaries.Updates.DeleteBeneficiary;
+using ApiBaseTemplate.Application.Beneficiaries.Updates.UpdateBeneficiary;
 using ApiBaseTemplate.Domain.Shared;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,6 @@ public class BeneficiaryController : ApiController
     {
     }
 
-    //create
     /// <summary>
     /// Creates a new beneficiary
     /// </summary>
@@ -78,7 +77,6 @@ public class BeneficiaryController : ApiController
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 
-    //update beneficiary
     /// <summary>
     /// Update beneficiary
     /// </summary>

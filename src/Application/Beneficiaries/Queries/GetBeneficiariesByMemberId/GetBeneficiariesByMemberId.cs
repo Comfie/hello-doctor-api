@@ -2,34 +2,36 @@
 using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Commands.GetBeneficiary;
+namespace ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMemberId;
 
-public record GetBeneficiaryCommand(long Id) : IRequest<Result<BeneficiaryResponse>>;
+public record GetBeneficiariesByMemberIdCommand(string MainMemberId) : IRequest<Result<List<BeneficiaryResponse>>>;
 
-public class GetBeneficiaryCommandValidator : AbstractValidator<GetBeneficiaryCommand>
+public class GetBeneficiariesByMemberIdCommandValidator : AbstractValidator<GetBeneficiariesByMemberIdCommand>
 {
-    public GetBeneficiaryCommandValidator()
+    public GetBeneficiariesByMemberIdCommandValidator()
     {
     }
 }
 
-public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryCommand, Result<BeneficiaryResponse>>
+public class
+    GetBeneficiariesByMemberIdCommandHandler : IRequestHandler<GetBeneficiariesByMemberIdCommand,
+    Result<List<BeneficiaryResponse>>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetBeneficiaryCommandHandler(IApplicationDbContext context)
+    public GetBeneficiariesByMemberIdCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<Result<BeneficiaryResponse>> Handle(GetBeneficiaryCommand request,
+    public async Task<Result<List<BeneficiaryResponse>>> Handle(GetBeneficiariesByMemberIdCommand request,
         CancellationToken cancellationToken)
     {
-        var beneficiary = await _context
+        var beneficiaries = await _context
             .Beneficiaries
             .Include(beneficiary => beneficiary.MainMember)
             .Where(x => x.IsDeleted == false)
-            .Where(x => x.Id == request.Id)
+            .Where(x => x.MainMemberId == request.MainMemberId)
             .Select(beneficiary => new BeneficiaryResponse(
                 beneficiary.Id,
                 beneficiary.MainMember.FirstName + " " + beneficiary.MainMember.LastName,
@@ -41,10 +43,8 @@ public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryComman
                 beneficiary.MainMemberId,
                 beneficiary.Relationship.ToString()
             ))
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        return beneficiary is null
-            ? Result.Failure<BeneficiaryResponse>(new Error("Beneficiary", "Not found"))
-            : Result.Success(beneficiary);
+        return Result.Success(beneficiaries);
     }
 }

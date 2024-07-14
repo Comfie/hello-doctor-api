@@ -2,7 +2,7 @@
 using ApiBaseTemplate.Domain.Repositories;
 using ApiBaseTemplate.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Commands.DeleteBeneficiary;
+namespace ApiBaseTemplate.Application.Beneficiaries.Updates.DeleteBeneficiary;
 
 public record DeleteBeneficiaryCommand(long Id) : IRequest<Result<bool>>
 {

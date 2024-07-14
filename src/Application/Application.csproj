@@ -25,7 +25,10 @@
   <ItemGroup>
     <Folder Include="Authentications\Queries\" />
     <Folder Include="Authentications\Updates\" />
-    <Folder Include="Pharmacies\" />
+    <Folder Include="Beneficiaries\Queries\" />
+    <Folder Include="Beneficiaries\Updates\" />
+    <Folder Include="Pharmacies\Queries\" />
+    <Folder Include="Pharmacies\Updates\" />
   </ItemGroup>
 
 </Project>

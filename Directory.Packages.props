@@ -34,8 +34,8 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageVersion Include="Otp.NET" Version="1.4.0" />
     <PackageVersion Include="Scrutor" Version="4.2.2" />
-    <PackageVersion Include="MimeKit" Version="4.5.0" />
-    <PackageVersion Include="Mailkit" Version="4.5.0" />
+    <PackageVersion Include="MimeKit" Version="4.7.1" />
+    <PackageVersion Include="Mailkit" Version="4.7.1" />
     <PackageVersion Include="Grinderofl.FeatureFolders" Version="3.1.1" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
     <PackageVersion Include="Asp.Versioning.Http" Version="8.1.0" />

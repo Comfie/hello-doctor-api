@@ -1,6 +1,6 @@
 ﻿using ApiBaseTemplate.Application.Common.Interfaces;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Commands.UpdatePharmacy;
+namespace ApiBaseTemplate.Application.Pharmacies.Updates.UpdatePharmacy;
 
 public record UpdatePharmacyCommand : IRequest<int>
 {

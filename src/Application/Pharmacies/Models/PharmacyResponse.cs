@@ -1,7 +1,8 @@
-namespace ApiBaseTemplate.Domain.Entities;
+namespace ApiBaseTemplate.Application.Pharmacies.Models;
 
-public class Pharmacy : BaseAuditableEntity
+public class PharmacyResponse
 {
+    public required long Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
     public string? ContactNumber { get; set; }
@@ -12,8 +13,4 @@ public class Pharmacy : BaseAuditableEntity
     public TimeSpan OpeningTime { get; set; }
     public TimeSpan ClosingTime { get; set; }
     public bool IsActive { get; set; }
-    public bool IsDeleted { get; set; }
-    
-    //it needs to be linked with a list of doctors
-    //also 
 }

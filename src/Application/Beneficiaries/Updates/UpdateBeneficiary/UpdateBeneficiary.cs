@@ -3,7 +3,7 @@ using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Domain.Repositories;
 using ApiBaseTemplate.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Commands.UpdateBeneficiary;
+namespace ApiBaseTemplate.Application.Beneficiaries.Updates.UpdateBeneficiary;
 
 public record UpdateBeneficiaryCommand(
     long Id,
