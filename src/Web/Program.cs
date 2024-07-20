@@ -52,9 +52,8 @@ try
     app.UseSerilogRequestLogging();
     app.UseHealthChecks("/health");
     
-    app.UseHttpsRedirection();
-    
     app.UseStaticFiles();
+    app.UseHttpsRedirection();
     
     app.UseAuthentication();
     app.UseAuthorization();
