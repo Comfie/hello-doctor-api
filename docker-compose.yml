@@ -1,24 +1,25 @@
 version: '3.4'
 
 services:
-  web:
-    image: ${DOCKER_REGISTRY-}web
-    container_name: hello-doctor
+  hellodoctor.api:
+    image: ${DOCKER_REGISTRY-}hellodoctorapi
+    container_name: hellodoctor.api
     build:
       context: .
       target: final
       dockerfile: src/Web/Dockerfile
     ports:
-      - "80:80"
+      - "8080:8080"
+      - "5001:5001"
     depends_on:
-      hello-doctor.database:
+      hellodoctor.database:
         condition: service_healthy
 
-  hello-doctor.database:
+  hellodoctor.database:
     image: postgres:latest
     restart: always
     user: postgres
-    container_name: hello-doctor.database
+    container_name: hellodoctor.database
     ports:
       - "5432:5432"
     environment:

@@ -7,7 +7,7 @@
     <ProjectGuid>0e0a77a6-12d6-4e69-bd39-e30103fd29a8</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}</DockerServiceUrl>
-    <DockerServiceName>web</DockerServiceName>
+    <DockerServiceName>hellodoctor.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
