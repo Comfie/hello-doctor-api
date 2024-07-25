@@ -1,6 +1,6 @@
 namespace ApiBaseTemplate.Domain.Enums;
 
-public enum RelationshipToUser
+public enum RelationshipToBenefactor
 {
     Parent = 0,
     Child = 1,

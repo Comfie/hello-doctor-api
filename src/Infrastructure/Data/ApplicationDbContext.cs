@@ -15,6 +15,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<OneTimePin> OneTimePins => Set<OneTimePin>();
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
     public DbSet<Pharmacy> Pharmacies => Set<Pharmacy>();
+    public DbSet<Benefactor> Benefactors => Set<Benefactor>();
+    public DbSet<Doctor> Doctors => Set<Doctor>();
+    public DbSet<Pharmacist> Pharmacists => Set<Pharmacist>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

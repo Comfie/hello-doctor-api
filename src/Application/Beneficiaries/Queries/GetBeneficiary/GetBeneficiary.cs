@@ -27,18 +27,18 @@ public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryComman
     {
         var beneficiary = await _context
             .Beneficiaries
-            .Include(beneficiary => beneficiary.MainMember)
+            .Include(beneficiary => beneficiary.Benefactor)
             .Where(x => x.IsDeleted == false)
             .Where(x => x.Id == request.Id)
             .Select(beneficiary => new BeneficiaryResponse(
                 beneficiary.Id,
-                beneficiary.MainMember.FirstName + " " + beneficiary.MainMember.LastName,
-                beneficiary.MainMember.PhoneNumber ?? string.Empty,
+                beneficiary.Benefactor.FirstName + " " + beneficiary.Benefactor.LastName,
+                beneficiary.Benefactor.PhoneNumber ?? string.Empty,
                 beneficiary.FirstName,
                 beneficiary.LastName,
                 beneficiary.PhoneNumber,
                 beneficiary.EmailAddress,
-                beneficiary.MainMemberId,
+                beneficiary.BenefactorId,
                 beneficiary.Relationship.ToString()
             ))
             .FirstOrDefaultAsync(cancellationToken);

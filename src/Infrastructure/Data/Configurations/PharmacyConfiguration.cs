@@ -33,11 +33,11 @@ public class PharmacyConfiguration : IEntityTypeConfiguration<Pharmacy>
             .Property(p => p.ContactEmail)
             .HasMaxLength(25);
         
-        // builder
-        //     .HasMany(p => p.Beneficiaries)
-        //     .WithOne(b => b.Pharmacy)
-        //     .HasForeignKey(b => b.PharmacyId)
-        //     .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.Pharmacists)
+            .WithOne(b => b.Pharmacy)
+            .HasForeignKey(b => b.PharmacyId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .Property(p => p.IsActive)

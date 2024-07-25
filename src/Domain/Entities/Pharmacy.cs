@@ -1,3 +1,5 @@
+using ApiBaseTemplate.Domain.Entities.Auth;
+
 namespace ApiBaseTemplate.Domain.Entities;
 
 public class Pharmacy : BaseAuditableEntity
@@ -13,6 +15,7 @@ public class Pharmacy : BaseAuditableEntity
     public TimeSpan ClosingTime { get; set; }
     public bool IsActive { get; set; }
     public bool IsDeleted { get; set; }
+    public ICollection<Pharmacist>? Pharmacists { get; set; } = new List<Pharmacist>();
     
     //it needs to be linked with a list of doctors
     //also 

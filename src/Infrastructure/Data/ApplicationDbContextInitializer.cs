@@ -107,10 +107,8 @@ public class ApplicationDbContextInitializer
     {
         try
         {
-            var roles = new List<string>();
-            roles.Add("Administrator");
-            roles.Add("User");
-
+            string[] roles = ["Administrator", "Doctor", "Beneficiary", "Pharmacist", "Benefactor", "LogisticsPartner"];
+            
             foreach (var role in roles)
             {
                 var roleExists = await _roleManager.RoleExistsAsync(role);
@@ -118,6 +116,7 @@ public class ApplicationDbContextInitializer
                 {
                     await _roleManager.CreateAsync(new IdentityRole(role));
                     _logger.LogInformation("Role {Role} created", role);
+                    continue;
                 }
 
                 _logger.LogInformation("Role {Role} exists", role);
