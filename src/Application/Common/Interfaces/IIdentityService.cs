@@ -1,5 +1,4 @@
 ﻿using ApiBaseTemplate.Application.Authentications.Models;
-using ApiBaseTemplate.Application.Common.Models;
 using ApiBaseTemplate.Domain.Shared;
 
 namespace ApiBaseTemplate.Application.Common.Interfaces;
@@ -13,6 +12,7 @@ public interface IIdentityService
     Task<Result<UserDetailsResponse>> GetUserById(string userId, CancellationToken cancellationToken = default);
 
     Task<Result<List<UserDetailsResponse>>> GetUsers(CancellationToken cancellationToken = default);
+    Task<Result<List<string?>>> GetRolesAsync(CancellationToken cancellationToken = default);
 
     Task<Result<List<UserDetailsResponse>>> GetActiveUsers(CancellationToken cancellationToken = default);
 

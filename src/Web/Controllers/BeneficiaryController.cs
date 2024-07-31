@@ -1,7 +1,7 @@
 using ApiBaseTemplate.Application.Beneficiaries.Commands.CreateBeneficiary;
 using ApiBaseTemplate.Application.Beneficiaries.Models;
 using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiaries;
-using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMemberId;
+using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
 using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiary;
 using ApiBaseTemplate.Application.Beneficiaries.Updates.DeleteBeneficiary;
 using ApiBaseTemplate.Application.Beneficiaries.Updates.UpdateBeneficiary;
@@ -60,7 +60,7 @@ public class BeneficiaryController : ApiController
     public async Task<IActionResult> GetAllMemberBeneficiaries(string id, CancellationToken cancellationToken)
     {
         Result<List<BeneficiaryResponse>>
-            response = await Sender.Send(new GetBeneficiariesByMemberIdCommand(id), cancellationToken);
+            response = await Sender.Send(new GetBeneficiariesByMainMemberIdCommand(id), cancellationToken);
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
     }
 

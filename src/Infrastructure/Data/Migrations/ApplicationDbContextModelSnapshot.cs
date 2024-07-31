@@ -144,17 +144,13 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.ToTable("OneTimePins");
                 });
 
-            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Benefactor", b =>
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Auth.SuperAdministrator", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<string>("AccountId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -168,22 +164,54 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Benefactors");
+                    b.ToTable("SuperAdministrators");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Auth.SystemAdministrator", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("SystemAdministrators");
                 });
 
             modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Beneficiary", b =>
                 {
                     b.Property<long>("Id")
                         .HasColumnType("bigint");
-
-                    b.Property<string>("BenefactorId")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -215,6 +243,10 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("MainMemberId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -226,15 +258,15 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BenefactorId")
-                        .IsUnique();
-
                     b.HasIndex("EmailAddress")
                         .IsUnique();
 
                     b.HasIndex("FirstName");
 
                     b.HasIndex("LastName");
+
+                    b.HasIndex("MainMemberId")
+                        .IsUnique();
 
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
@@ -250,7 +282,72 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("PrimaryContact")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("QualificationDescription")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("SecondaryContact")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmailAddress")
+                        .IsUnique();
+
+                    b.HasIndex("PrimaryContact")
+                        .IsUnique();
+
+                    b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.MainMember", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
                     b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -266,23 +363,12 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
-                    b.Property<string>("PrimaryContact")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("QualificationDescription")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("SecondaryContact")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("Doctors");
+                    b.ToTable("MainMembers");
                 });
 
             modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Pharmacist", b =>
@@ -392,6 +478,54 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Pharmacies");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Prescription", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BeneficiaryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Logo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MainMemberId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeneficiaryId")
+                        .IsUnique();
+
+                    b.HasIndex("MainMemberId")
+                        .IsUnique();
+
+                    b.ToTable("Prescriptions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -535,39 +669,50 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Benefactor", b =>
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Auth.SuperAdministrator", b =>
                 {
-                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "Account")
-                        .WithOne()
-                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Benefactor", "AccountId")
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "User")
+                        .WithOne("SuperAdministrator")
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Auth.SuperAdministrator", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Auth.SystemAdministrator", b =>
+                {
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "User")
+                        .WithOne("SystemAdministrator")
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Auth.SystemAdministrator", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Beneficiary", b =>
                 {
-                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "Benefactor")
-                        .WithOne()
-                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Beneficiary", "BenefactorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ApiBaseTemplate.Domain.Entities.Benefactor", null)
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.MainMember", null)
                         .WithMany("Beneficiaries")
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Benefactor");
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "MainMember")
+                        .WithOne()
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Beneficiary", "MainMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MainMember");
                 });
 
-            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Doctor", b =>
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.MainMember", b =>
                 {
                     b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "Account")
-                        .WithOne()
-                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Doctor", "AccountId")
+                        .WithOne("MainMember")
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.MainMember", "AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -577,7 +722,7 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
             modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Pharmacist", b =>
                 {
                     b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "Account")
-                        .WithOne()
+                        .WithOne("Pharmacist")
                         .HasForeignKey("ApiBaseTemplate.Domain.Entities.Pharmacist", "AccountId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -591,6 +736,25 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("Pharmacy");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Prescription", b =>
+                {
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.Beneficiary", "Beneficiary")
+                        .WithOne()
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Prescription", "BeneficiaryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", "MainMember")
+                        .WithOne()
+                        .HasForeignKey("ApiBaseTemplate.Domain.Entities.Prescription", "MainMemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Beneficiary");
+
+                    b.Navigation("MainMember");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -644,7 +808,18 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Benefactor", b =>
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.Auth.ApplicationUser", b =>
+                {
+                    b.Navigation("MainMember");
+
+                    b.Navigation("Pharmacist");
+
+                    b.Navigation("SuperAdministrator");
+
+                    b.Navigation("SystemAdministrator");
+                });
+
+            modelBuilder.Entity("ApiBaseTemplate.Domain.Entities.MainMember", b =>
                 {
                     b.Navigation("Beneficiaries");
                 });

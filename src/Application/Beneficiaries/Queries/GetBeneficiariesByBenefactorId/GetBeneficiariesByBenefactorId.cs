@@ -2,36 +2,36 @@
 using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiaries;
+namespace ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
 
-public record GetBeneficiariesCommand : IRequest<Result<List<BeneficiaryResponse>>>
-{
-}
+public record GetBeneficiariesByMainMemberIdCommand(string MainMemberId) : IRequest<Result<List<BeneficiaryResponse>>>;
 
-public class GetBeneficiariesCommandValidator : AbstractValidator<GetBeneficiariesCommand>
+public class GetBeneficiariesByMainMemberIdCommandValidator : AbstractValidator<GetBeneficiariesByMainMemberIdCommand>
 {
-    public GetBeneficiariesCommandValidator()
+    public GetBeneficiariesByMainMemberIdCommandValidator()
     {
     }
 }
 
 public class
-    GetBeneficiariesCommandHandler : IRequestHandler<GetBeneficiariesCommand, Result<List<BeneficiaryResponse>>>
+    GetBeneficiariesByMainMemberIdCommandHandler : IRequestHandler<GetBeneficiariesByMainMemberIdCommand,
+    Result<List<BeneficiaryResponse>>>
 {
     private readonly IApplicationDbContext _context;
 
-    public GetBeneficiariesCommandHandler(IApplicationDbContext context)
+    public GetBeneficiariesByMainMemberIdCommandHandler(IApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<Result<List<BeneficiaryResponse>>> Handle(GetBeneficiariesCommand request,
+    public async Task<Result<List<BeneficiaryResponse>>> Handle(GetBeneficiariesByMainMemberIdCommand request,
         CancellationToken cancellationToken)
     {
         var beneficiaries = await _context
             .Beneficiaries
             .Include(beneficiary => beneficiary.MainMember)
             .Where(x => x.IsDeleted == false)
+            .Where(x => x.MainMemberId == request.MainMemberId)
             .Select(beneficiary => new BeneficiaryResponse(
                 beneficiary.Id,
                 beneficiary.MainMember.FirstName + " " + beneficiary.MainMember.LastName,

@@ -32,17 +32,17 @@ public class CreateBeneficiaryCommandHandler : IRequestHandler<CreateBeneficiary
             LastName = request.Request.LastName,
             PhoneNumber = request.Request.PhoneNumber,
             EmailAddress = request.Request.EmailAddress,
-            BenefactorId = mainMember.Id,
-            Benefactor = mainMember
+            MainMemberId = mainMember.Id,
+            MainMember = mainMember
         };
         
         var relationshipEnum = request.Request.Relationship switch
         {
-            "sister" => RelationshipToBenefactor.Sister,
-            "brother" => RelationshipToBenefactor.Brother,
-            "parent" => RelationshipToBenefactor.Parent,
-            "child" => RelationshipToBenefactor.Child,
-            _ => RelationshipToBenefactor.Sister
+            "sister" => RelationshipToMainMember.Sister,
+            "brother" => RelationshipToMainMember.Brother,
+            "parent" => RelationshipToMainMember.Parent,
+            "child" => RelationshipToMainMember.Child,
+             _ => RelationshipToMainMember.Other
         };
         
         beneficiary.Relationship = relationshipEnum;

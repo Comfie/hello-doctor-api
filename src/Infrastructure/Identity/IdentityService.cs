@@ -4,6 +4,7 @@ using ApiBaseTemplate.Application.Authentications.Models;
 using ApiBaseTemplate.Application.Common.Interfaces;
 using ApiBaseTemplate.Application.Common.Models;
 using ApiBaseTemplate.Application.Common.Models.Settings;
+using ApiBaseTemplate.Domain.Entities;
 using ApiBaseTemplate.Domain.Entities.Auth;
 using ApiBaseTemplate.Domain.Repositories;
 using ApiBaseTemplate.Domain.Shared;
@@ -112,8 +113,8 @@ public class IdentityService : IIdentityService
 
                 return Result.Failure<bool>(new Error( "Creating User","User with this email already exists"));
 
-            var role = "Client";
-
+            var role = "User";
+            
             var applicationUser = new ApplicationUser
             {
                 UserName = createUserRequest.Email,
@@ -128,7 +129,7 @@ public class IdentityService : IIdentityService
             var result = await _userManager.CreateAsync(applicationUser, createUserRequest.Password);
 
             if (await _roleManager.RoleExistsAsync(role))
-                await _userManager.AddToRoleAsync(applicationUser, role);
+                await _userManager.AddToRoleAsync(applicationUser,role);
 
             if (!result.Succeeded)
                 return Result.Failure<bool>(new Error( "Creating User","Failed to create user"));
@@ -298,6 +299,16 @@ public class IdentityService : IIdentityService
 
 
             return Result.Success(groupedUsers);
+        }
+
+        public async Task<Result<List<string?>>> GetRolesAsync(CancellationToken cancellationToken = default)
+        {
+            var roles = await _context
+                .Roles
+                .Select(roles => roles.Name)
+                .ToListAsync(cancellationToken);
+
+            return Result.Success(roles);
         }
 
         public async Task<Result<List<UserDetailsResponse>>> GetActiveUsers(CancellationToken cancellationToken = default)

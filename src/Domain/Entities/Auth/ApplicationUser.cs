@@ -10,4 +10,9 @@ public class ApplicationUser : IdentityUser
     public DateTime? CreatedDate { get; set; }
     public DateTime? RefreshTokenExpiryTime { get; set; }
     public bool IsActive { get; set; }
+    public SystemAdministrator? SystemAdministrator { get; set; }
+    public SuperAdministrator? SuperAdministrator { get; set; }
+    public MainMember? MainMember { get; set; }
+    public Pharmacist? Pharmacist { get; set; }
+    
 }

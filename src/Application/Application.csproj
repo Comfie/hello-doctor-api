@@ -23,10 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Authentications\Queries\" />
-    <Folder Include="Authentications\Updates\" />
     <Folder Include="Beneficiaries\Queries\" />
     <Folder Include="Beneficiaries\Updates\" />
+    <Folder Include="MainMembers\Commands\" />
+    <Folder Include="MainMembers\Models\" />
+    <Folder Include="MainMembers\Queries\" />
+    <Folder Include="MainMembers\Updates\" />
     <Folder Include="Pharmacies\Queries\" />
     <Folder Include="Pharmacies\Updates\" />
   </ItemGroup>

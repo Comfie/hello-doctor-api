@@ -4,19 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ApiBaseTemplate.Infrastructure.Data.Configurations;
 
-public class BenefactorConfiguration : IEntityTypeConfiguration<Benefactor>
+public class MainMemberConfiguration : IEntityTypeConfiguration<MainMember>
 {
-    public void Configure(EntityTypeBuilder<Benefactor> builder)
+    public void Configure(EntityTypeBuilder<MainMember> builder)
     {
         
-        builder.HasOne(benefactor => benefactor.Account)
-            .WithOne()
-            .HasForeignKey<Benefactor>(benefactor => benefactor.AccountId)
+        builder.HasOne(mainMember => mainMember.Account)
+            .WithOne(account => account.MainMember)
+            .HasForeignKey<MainMember>(mainMember => mainMember.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(b => b.Beneficiaries)
             .WithOne()
-            .HasForeignKey(benefactor => benefactor.Id)
+            .HasForeignKey(mainMember => mainMember.Id)
             .OnDelete(DeleteBehavior.Cascade);
         
     }

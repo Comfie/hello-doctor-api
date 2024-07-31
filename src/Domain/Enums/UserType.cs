@@ -2,10 +2,12 @@ namespace ApiBaseTemplate.Domain.Enums;
 
 public enum UserType
 {
-    Admin = 0,
-    Doctor = 1,
-    Pharmacist = 2,
-    Benefactor = 3,
-    Beneficiary = 4,
-    LogisticsPartner = 5
+    SystemAdministrator = 0,
+    SuperAdministrator = 1,
+    Doctor = 2,
+    Pharmacist = 3,
+    MainMember = 4,
+    Beneficiary = 5,
+    LogisticsPartner = 6,
+    User = 7
 }

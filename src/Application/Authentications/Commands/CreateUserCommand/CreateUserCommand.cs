@@ -1,5 +1,6 @@
 using ApiBaseTemplate.Application.Authentications.Models;
 using ApiBaseTemplate.Application.Common.Interfaces;
+using ApiBaseTemplate.Domain.Enums;
 using ApiBaseTemplate.Domain.Shared;
 
 namespace ApiBaseTemplate.Application.Authentications.Commands.CreateUserCommand;
@@ -11,6 +12,7 @@ public sealed record CreateUserCommand : IRequest<Result<bool>>
     public required string Lastname { get; set; }
     public required string PhoneNumber { get; set; }
     public required string Password { get; set; }
+    public required string Role { get; set; }
 }
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<bool>>
@@ -30,7 +32,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             Firstname = request.Firstname,
             Lastname = request.Lastname,
             Password = request.Password,
-            PhoneNumber = request.PhoneNumber
+            PhoneNumber = request.PhoneNumber,
+            Role = request.Role
         };
         var result = await _identityService.CreateUserAsync(user, cancellationToken);
 

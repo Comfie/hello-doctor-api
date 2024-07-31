@@ -107,7 +107,16 @@ public class ApplicationDbContextInitializer
     {
         try
         {
-            string[] roles = ["Administrator", "Doctor", "Beneficiary", "Pharmacist", "Benefactor", "LogisticsPartner"];
+            string[] roles = [
+                "SystemAdministrator", 
+                "SuperAdministrator",
+                "Doctor",
+                "Beneficiary", 
+                "Pharmacist", 
+                "MainMember", 
+                "LogisticsPartner",
+                "User"
+            ];
             
             foreach (var role in roles)
             {
@@ -152,7 +161,7 @@ public class ApplicationDbContextInitializer
 
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
-            var administratorRole = new IdentityRole("Administrator");
+            var administratorRole = new IdentityRole("SuperAdministrator");
 
             await _userManager.CreateAsync(administrator, "Admin@123");
             _logger.LogInformation("ApplicationUser {ApplicationUser} created", administrator.Email);

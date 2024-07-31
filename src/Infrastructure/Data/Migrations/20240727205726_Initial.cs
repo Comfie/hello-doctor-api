@@ -58,6 +58,29 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Doctors",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    FirstName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    EmailAddress = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    PrimaryContact = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    SecondaryContact = table.Column<string>(type: "text", nullable: true),
+                    QualificationDescription = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Doctors", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pharmacies",
                 columns: table => new
                 {
@@ -191,11 +214,12 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Benefactors",
+                name: "MainMembers",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Code = table.Column<string>(type: "text", nullable: false),
                     AccountId = table.Column<string>(type: "text", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -204,35 +228,9 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Benefactors", x => x.Id);
+                    table.PrimaryKey("PK_MainMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Benefactors_AspNetUsers_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Doctors",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    PrimaryContact = table.Column<string>(type: "text", nullable: false),
-                    SecondaryContact = table.Column<string>(type: "text", nullable: true),
-                    QualificationDescription = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    AccountId = table.Column<string>(type: "text", nullable: false),
-                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: true),
-                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Doctors", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Doctors_AspNetUsers_AccountId",
+                        name: "FK_MainMembers_AspNetUsers_AccountId",
                         column: x => x.AccountId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -261,6 +259,52 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SuperAdministrators",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SuperAdministrators", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SuperAdministrators_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SystemAdministrators",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SystemAdministrators", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SystemAdministrators_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -303,7 +347,7 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                     PhoneNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     EmailAddress = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Relationship = table.Column<string>(type: "text", nullable: false),
-                    BenefactorId = table.Column<string>(type: "text", nullable: false),
+                    MainMemberId = table.Column<string>(type: "text", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false),
                     Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -314,15 +358,48 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 {
                     table.PrimaryKey("PK_Beneficiaries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Beneficiaries_AspNetUsers_BenefactorId",
-                        column: x => x.BenefactorId,
+                        name: "FK_Beneficiaries_AspNetUsers_MainMemberId",
+                        column: x => x.MainMemberId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Beneficiaries_Benefactors_Id",
+                        name: "FK_Beneficiaries_MainMembers_Id",
                         column: x => x.Id,
-                        principalTable: "Benefactors",
+                        principalTable: "MainMembers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Prescriptions",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    Code = table.Column<string>(type: "text", nullable: false),
+                    Logo = table.Column<string>(type: "text", nullable: true),
+                    MainMemberId = table.Column<string>(type: "text", nullable: false),
+                    BeneficiaryId = table.Column<long>(type: "bigint", nullable: false),
+                    Created = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Prescriptions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Prescriptions_AspNetUsers_MainMemberId",
+                        column: x => x.MainMemberId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Prescriptions_Beneficiaries_BeneficiaryId",
+                        column: x => x.BeneficiaryId,
+                        principalTable: "Beneficiaries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -365,18 +442,6 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Benefactors_AccountId",
-                table: "Benefactors",
-                column: "AccountId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Beneficiaries_BenefactorId",
-                table: "Beneficiaries",
-                column: "BenefactorId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Beneficiaries_EmailAddress",
                 table: "Beneficiaries",
                 column: "EmailAddress",
@@ -393,14 +458,32 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 column: "LastName");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Beneficiaries_MainMemberId",
+                table: "Beneficiaries",
+                column: "MainMemberId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Beneficiaries_PhoneNumber",
                 table: "Beneficiaries",
                 column: "PhoneNumber",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Doctors_AccountId",
+                name: "IX_Doctors_EmailAddress",
                 table: "Doctors",
+                column: "EmailAddress",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Doctors_PrimaryContact",
+                table: "Doctors",
+                column: "PrimaryContact",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MainMembers_AccountId",
+                table: "MainMembers",
                 column: "AccountId",
                 unique: true);
 
@@ -419,6 +502,30 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 name: "IX_Pharmacists_PharmacyId",
                 table: "Pharmacists",
                 column: "PharmacyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Prescriptions_BeneficiaryId",
+                table: "Prescriptions",
+                column: "BeneficiaryId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Prescriptions_MainMemberId",
+                table: "Prescriptions",
+                column: "MainMemberId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SuperAdministrators_UserId",
+                table: "SuperAdministrators",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SystemAdministrators_UserId",
+                table: "SystemAdministrators",
+                column: "UserId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -440,9 +547,6 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Beneficiaries");
-
-            migrationBuilder.DropTable(
                 name: "Doctors");
 
             migrationBuilder.DropTable(
@@ -452,13 +556,25 @@ namespace ApiBaseTemplate.Infrastructure.Data.Migrations
                 name: "Pharmacists");
 
             migrationBuilder.DropTable(
+                name: "Prescriptions");
+
+            migrationBuilder.DropTable(
+                name: "SuperAdministrators");
+
+            migrationBuilder.DropTable(
+                name: "SystemAdministrators");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Benefactors");
+                name: "Pharmacies");
 
             migrationBuilder.DropTable(
-                name: "Pharmacies");
+                name: "Beneficiaries");
+
+            migrationBuilder.DropTable(
+                name: "MainMembers");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

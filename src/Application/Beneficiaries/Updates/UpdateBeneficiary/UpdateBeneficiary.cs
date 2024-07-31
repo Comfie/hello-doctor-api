@@ -36,7 +36,7 @@ public class UpdateBeneficiaryCommandHandler : IRequestHandler<UpdateBeneficiary
     {
         var beneficiary = await _context
             .Beneficiaries
-            .Include(beneficiary => beneficiary.Benefactor)
+            .Include(beneficiary => beneficiary.MainMember)
             .Where(x => x.Id == request.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -54,13 +54,13 @@ public class UpdateBeneficiaryCommandHandler : IRequestHandler<UpdateBeneficiary
 
         return Result.Success(new BeneficiaryResponse(
             beneficiary.Id,
-            beneficiary.Benefactor.FirstName + " " + beneficiary.Benefactor.LastName,
-            beneficiary.Benefactor.PhoneNumber ?? string.Empty,
+            beneficiary.MainMember.FirstName + " " + beneficiary.MainMember.LastName,
+            beneficiary.MainMember.PhoneNumber ?? string.Empty,
             beneficiary.FirstName,
             beneficiary.LastName,
             beneficiary.PhoneNumber,
             beneficiary.EmailAddress,
-            beneficiary.BenefactorId,
+            beneficiary.MainMemberId,
             beneficiary.Relationship.ToString()
         ));
     }

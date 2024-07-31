@@ -8,11 +8,33 @@ public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
 {
     public void Configure(EntityTypeBuilder<Doctor> builder)
     {
-        builder.HasOne(accountAdmin => accountAdmin.Account)
-            .WithOne()
-            .HasForeignKey<Doctor>(accountAdmin => accountAdmin.AccountId)
-            .OnDelete(DeleteBehavior.Restrict);
-
+        builder
+            .Property(b => b.FirstName)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder
+            .Property(b => b.LastName)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder
+            .Property(b => b.EmailAddress)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder
+            .Property(b => b.PrimaryContact)
+            .HasMaxLength(100)
+            .IsRequired();
+        
+        builder
+            .HasIndex(b => b.EmailAddress)
+            .IsUnique();
+        
+        builder
+            .HasIndex(b => b.PrimaryContact)
+            .IsUnique();
         builder
             .Property(b => b.QualificationDescription)
             .HasMaxLength(100);

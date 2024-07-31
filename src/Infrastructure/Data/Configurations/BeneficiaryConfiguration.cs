@@ -9,9 +9,9 @@ public class BeneficiaryConfiguration : IEntityTypeConfiguration<Beneficiary>
     public void Configure(EntityTypeBuilder<Beneficiary> builder)
     {
         builder
-            .HasOne(o => o.Benefactor)
+            .HasOne(o => o.MainMember)
             .WithOne()
-            .HasForeignKey<Beneficiary>(o => o.BenefactorId)
+            .HasForeignKey<Beneficiary>(o => o.MainMemberId)
             .OnDelete(DeleteBehavior.Cascade);
         
         builder
