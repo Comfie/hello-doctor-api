@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ApiBaseTemplate.Domain</RootNamespace>
-    <AssemblyName>ApiBaseTemplate.Domain</AssemblyName>
+    <RootNamespace>HelloDoctorApi.Domain</RootNamespace>
+    <AssemblyName>HelloDoctorApi.Domain</AssemblyName>
+    <PackageId>HelloDoctorApi.Domain</PackageId>
+    <Authors>HelloDoctorApi.Domain</Authors>
+    <Company>HelloDoctorApi.Domain</Company>
+    <Product>HelloDoctorApi.Domain</Product>
   </PropertyGroup>
 
   <ItemGroup>

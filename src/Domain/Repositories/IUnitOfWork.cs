@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Repositories;
+﻿namespace HelloDoctorApi.Domain.Repositories;
 
 public interface IUnitOfWork
 {

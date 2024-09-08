@@ -1,5 +1,5 @@
 ﻿
-namespace ApiBaseTemplate.Domain.Shared;
+namespace HelloDoctorApi.Domain.Shared;
 public class Result
 {
     protected internal Result(bool isSuccess, Error error)

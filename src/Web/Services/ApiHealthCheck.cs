@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace ApiBaseTemplate.Web.Services
+namespace HelloDoctorApi.Web.Services
 {
     public class ApiHealthCheck : IHealthCheck
     {

@@ -1,10 +1,10 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Common;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace ApiBaseTemplate.Infrastructure.Data.Interceptors;
+namespace HelloDoctorApi.Infrastructure.Data.Interceptors;
 
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {

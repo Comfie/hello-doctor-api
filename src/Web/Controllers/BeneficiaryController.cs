@@ -1,15 +1,15 @@
-using ApiBaseTemplate.Application.Beneficiaries.Commands.CreateBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Models;
-using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiaries;
-using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
-using ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Updates.DeleteBeneficiary;
-using ApiBaseTemplate.Application.Beneficiaries.Updates.UpdateBeneficiary;
-using ApiBaseTemplate.Domain.Shared;
 using Asp.Versioning;
+using HelloDoctorApi.Application.Beneficiaries.Commands.CreateBeneficiary;
+using HelloDoctorApi.Application.Beneficiaries.Models;
+using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiaries;
+using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
+using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiary;
+using HelloDoctorApi.Application.Beneficiaries.Updates.DeleteBeneficiary;
+using HelloDoctorApi.Application.Beneficiaries.Updates.UpdateBeneficiary;
+using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiBaseTemplate.Web.Controllers;
+namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
@@ -31,7 +31,7 @@ public class BeneficiaryController : ApiController
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateBeneficiary(
         [FromBody] CreateBeneficiaryRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         Result<long> response = await Sender.Send(new CreateBeneficiaryCommand(request), cancellationToken);
         return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
@@ -43,7 +43,7 @@ public class BeneficiaryController : ApiController
     /// <param name="cancellationToken"></param>
     /// <returns>list of beneficiary</returns>
     [HttpGet("get-all-beneficiaries")]
-    public async Task<IActionResult> GetAllBeneficiaries(CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAllBeneficiaries(CancellationToken cancellationToken = default)
     {
         Result<List<BeneficiaryResponse>>
             response = await Sender.Send(new GetBeneficiariesCommand(), cancellationToken);

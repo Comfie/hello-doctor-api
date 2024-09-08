@@ -1,6 +1,7 @@
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Common;
 
-namespace ApiBaseTemplate.Domain.Entities;
+namespace HelloDoctorApi.Domain.Entities;
 
 public class Pharmacy : BaseAuditableEntity
 {

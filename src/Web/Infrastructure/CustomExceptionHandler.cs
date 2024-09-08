@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Common.Exceptions;
+﻿using HelloDoctorApi.Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiBaseTemplate.Web.Infrastructure;
+namespace HelloDoctorApi.Web.Infrastructure;
 
 public class CustomExceptionHandler : IExceptionHandler
 {

@@ -1,8 +1,8 @@
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApiBaseTemplate.Infrastructure.Data.Configurations;
+namespace HelloDoctorApi.Infrastructure.Data.Configurations;
 
 public class SuperAdministratorConfiguration : IEntityTypeConfiguration<SuperAdministrator>
 {

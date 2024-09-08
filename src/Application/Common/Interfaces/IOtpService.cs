@@ -1,6 +1,6 @@
-using ApiBaseTemplate.Domain.Shared;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Common.Interfaces;
+namespace HelloDoctorApi.Application.Common.Interfaces;
 
 public interface IOtpService
 {

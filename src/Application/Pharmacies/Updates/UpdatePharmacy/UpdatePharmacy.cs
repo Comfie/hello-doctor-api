@@ -1,6 +1,6 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Updates.UpdatePharmacy;
+namespace HelloDoctorApi.Application.Pharmacies.Updates.UpdatePharmacy;
 
 public record UpdatePharmacyCommand : IRequest<int>
 {

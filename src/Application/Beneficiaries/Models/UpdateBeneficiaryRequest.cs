@@ -1,4 +1,4 @@
-namespace ApiBaseTemplate.Application.Beneficiaries.Models;
+namespace HelloDoctorApi.Application.Beneficiaries.Models;
 
 public class UpdateBeneficiaryRequest
 {

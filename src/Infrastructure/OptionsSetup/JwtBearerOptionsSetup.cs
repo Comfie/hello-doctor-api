@@ -1,10 +1,10 @@
 ﻿using System.Text;
-using ApiBaseTemplate.Application.Common.Models.Settings;
+using HelloDoctorApi.Application.Common.Models.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ApiBaseTemplate.Infrastructure.OptionsSetup
+namespace HelloDoctorApi.Infrastructure.OptionsSetup
 {
     public class JwtBearerOptionsSetup : IConfigureNamedOptions<JwtBearerOptions>
     {

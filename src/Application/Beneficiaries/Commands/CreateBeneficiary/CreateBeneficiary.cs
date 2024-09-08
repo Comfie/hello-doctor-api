@@ -1,11 +1,11 @@
-﻿using ApiBaseTemplate.Application.Beneficiaries.Models;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Entities;
-using ApiBaseTemplate.Domain.Enums;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Beneficiaries.Models;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Enums;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Commands.CreateBeneficiary;
+namespace HelloDoctorApi.Application.Beneficiaries.Commands.CreateBeneficiary;
 
 public record CreateBeneficiaryCommand(CreateBeneficiaryRequest Request) : IRequest<Result<long>>;
 

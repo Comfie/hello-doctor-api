@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Enums;
+﻿namespace HelloDoctorApi.Domain.Enums;
 
 public enum PriorityLevel
 {

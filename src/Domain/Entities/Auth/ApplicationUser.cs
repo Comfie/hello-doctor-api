@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace ApiBaseTemplate.Domain.Entities.Auth;
+namespace HelloDoctorApi.Domain.Entities.Auth;
 
 public class ApplicationUser : IdentityUser
 {

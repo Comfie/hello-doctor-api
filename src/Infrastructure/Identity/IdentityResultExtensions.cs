@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Common.Models;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Models;
+using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Identity;
 
-namespace ApiBaseTemplate.Infrastructure.Identity
+namespace HelloDoctorApi.Infrastructure.Identity
 {
     public static class IdentityResultExtensions
     {

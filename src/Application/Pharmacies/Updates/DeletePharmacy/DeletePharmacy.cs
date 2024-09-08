@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Updates.DeletePharmacy;
+namespace HelloDoctorApi.Application.Pharmacies.Updates.DeletePharmacy;
 
 public record DeletePharmacyCommand(long Id) : IRequest<Result<bool>>;
 

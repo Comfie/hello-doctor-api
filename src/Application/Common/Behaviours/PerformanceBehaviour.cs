@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
-using ApiBaseTemplate.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace ApiBaseTemplate.Application.Common.Behaviours;
+namespace HelloDoctorApi.Application.Common.Behaviours;
 
 public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {

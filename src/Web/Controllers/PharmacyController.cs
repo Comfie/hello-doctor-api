@@ -1,15 +1,15 @@
-using ApiBaseTemplate.Application.Pharmacies.Commands.CreatePharmacy;
-using ApiBaseTemplate.Application.Pharmacies.Commands.UploadPharmacyLogo;
-using ApiBaseTemplate.Application.Pharmacies.Models;
-using ApiBaseTemplate.Application.Pharmacies.Queries.GetActivePharmacies;
-using ApiBaseTemplate.Application.Pharmacies.Queries.GetAllPharmacies;
-using ApiBaseTemplate.Application.Pharmacies.Queries.GetByIdPharmacy;
-using ApiBaseTemplate.Application.Pharmacies.Updates.DeletePharmacy;
-using ApiBaseTemplate.Domain.Shared;
 using Asp.Versioning;
+using HelloDoctorApi.Application.Pharmacies.Commands.CreatePharmacy;
+using HelloDoctorApi.Application.Pharmacies.Commands.UploadPharmacyLogo;
+using HelloDoctorApi.Application.Pharmacies.Models;
+using HelloDoctorApi.Application.Pharmacies.Queries.GetActivePharmacies;
+using HelloDoctorApi.Application.Pharmacies.Queries.GetAllPharmacies;
+using HelloDoctorApi.Application.Pharmacies.Queries.GetByIdPharmacy;
+using HelloDoctorApi.Application.Pharmacies.Updates.DeletePharmacy;
+using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiBaseTemplate.Web.Controllers;
+namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]

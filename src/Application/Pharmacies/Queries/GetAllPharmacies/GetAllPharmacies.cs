@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Pharmacies.Models;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Pharmacies.Models;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Queries.GetAllPharmacies;
+namespace HelloDoctorApi.Application.Pharmacies.Queries.GetAllPharmacies;
 
 public record GetAllPharmaciesCommand : IRequest<Result<List<PharmacyResponse>>>;
 

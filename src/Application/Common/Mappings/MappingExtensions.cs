@@ -1,6 +1,6 @@
-﻿using ApiBaseTemplate.Application.Common.Models;
+﻿using HelloDoctorApi.Application.Common.Models;
 
-namespace ApiBaseTemplate.Application.Common.Mappings;
+namespace HelloDoctorApi.Application.Common.Mappings;
 
 public static class MappingExtensions
 {

@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using ApiBaseTemplate.Application.Common.Exceptions;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Common.Security;
+using HelloDoctorApi.Application.Common.Exceptions;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Security;
 
-namespace ApiBaseTemplate.Application.Common.Behaviours;
+namespace HelloDoctorApi.Application.Common.Behaviours;
 
 public class AuthorizationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : notnull
 {

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ApiBaseTemplate.Infrastructure</RootNamespace>
-    <AssemblyName>ApiBaseTemplate.Infrastructure</AssemblyName>
+    <RootNamespace>HelloDoctorApi.Infrastructure</RootNamespace>
+    <AssemblyName>HelloDoctorApi.Infrastructure</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
-﻿using ApiBaseTemplate.Application.Common.Models;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Models;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Common.Interfaces
+namespace HelloDoctorApi.Application.Common.Interfaces
 {
     public interface ISmsService 
     {

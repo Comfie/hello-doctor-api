@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Application.Common.Exceptions;
+﻿namespace HelloDoctorApi.Application.Common.Exceptions;
 
 public class ForbiddenAccessException : Exception
 {

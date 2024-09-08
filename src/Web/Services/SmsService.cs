@@ -1,19 +1,19 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Common.Models;
-using ApiBaseTemplate.Application.Common.Models.Settings;
-using ApiBaseTemplate.Domain.Entities.Auth;
-using ApiBaseTemplate.Domain.Shared;
-using ApiBaseTemplate.Infrastructure.Data;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Models;
+using HelloDoctorApi.Application.Common.Models.Settings;
+using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Shared;
+using HelloDoctorApi.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OtpNet;
 
-namespace ApiBaseTemplate.Web.Services
+namespace HelloDoctorApi.Web.Services
 {
     public class SmsService : ISmsService
     {

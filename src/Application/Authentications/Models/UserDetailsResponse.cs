@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Application.Authentications.Models
+﻿namespace HelloDoctorApi.Application.Authentications.Models
 {
     public class UserDetailsResponse
     {

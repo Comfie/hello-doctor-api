@@ -1,14 +1,14 @@
 using System.Text;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Entities.Auth;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Domain.Shared;
-using ApiBaseTemplate.Infrastructure.Data;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
+using HelloDoctorApi.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OtpNet;
 
-namespace ApiBaseTemplate.Infrastructure.Services;
+namespace HelloDoctorApi.Infrastructure.Services;
 
 public class OtpService : IOtpService
 {

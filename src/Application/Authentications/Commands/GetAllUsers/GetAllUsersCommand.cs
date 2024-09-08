@@ -1,8 +1,8 @@
-using ApiBaseTemplate.Application.Authentications.Models;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Shared;
+using HelloDoctorApi.Application.Authentications.Models;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Authentications.Commands.GetAllUsers;
+namespace HelloDoctorApi.Application.Authentications.Commands.GetAllUsers;
 
 public record GetAllUsersCommand : IRequest<Result<List<UserDetailsResponse>>>;
 

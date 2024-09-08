@@ -1,8 +1,8 @@
-using ApiBaseTemplate.Domain.Entities;
+using HelloDoctorApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace ApiBaseTemplate.Infrastructure.Data.Configurations;
+namespace HelloDoctorApi.Infrastructure.Data.Configurations;
 
 public class BeneficiaryConfiguration : IEntityTypeConfiguration<Beneficiary>
 {

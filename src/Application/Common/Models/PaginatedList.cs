@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Application.Common.Models;
+﻿namespace HelloDoctorApi.Application.Common.Models;
 
 public class PaginatedList<T>
 {

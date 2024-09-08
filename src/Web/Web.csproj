@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <RootNamespace>ApiBaseTemplate.Web</RootNamespace>
-    <AssemblyName>ApiBaseTemplate.Web</AssemblyName>
+    <RootNamespace>HelloDoctorApi.Web</RootNamespace>
+    <AssemblyName>HelloDoctorApi.Web</AssemblyName>
     <UserSecretsId>7afafbd4-d3eb-4795-9797-86a38b0ae781</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
@@ -39,6 +39,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
     <PackageReference Include="Scrutor" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="logs\" />
   </ItemGroup>
 
 </Project>

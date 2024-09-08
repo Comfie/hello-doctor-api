@@ -1,4 +1,4 @@
-﻿using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Domain.Shared;
 
 namespace Gatherly.Domain.Shared;
 

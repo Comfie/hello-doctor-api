@@ -1,11 +1,11 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Common.Models;
-using ApiBaseTemplate.Application.Common.Models.Settings;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Models;
+using HelloDoctorApi.Application.Common.Models.Settings;
 using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace ApiBaseTemplate.Web.Services;
+namespace HelloDoctorApi.Web.Services;
 
 public class EmailService : IEmailService
 {

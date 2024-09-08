@@ -1,10 +1,10 @@
-﻿using ApiBaseTemplate.Domain.Common;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Infrastructure.Data;
+﻿using HelloDoctorApi.Domain.Common;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace ApiBaseTemplate.Infrastructure;
+namespace HelloDoctorApi.Infrastructure;
 
 internal sealed class UnitOfWork : IUnitOfWork
 {

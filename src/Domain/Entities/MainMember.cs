@@ -1,6 +1,6 @@
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Entities.Auth;
 
-namespace ApiBaseTemplate.Domain.Entities;
+namespace HelloDoctorApi.Domain.Entities;
 
 public class MainMember : BaseAuditableEntity
 {

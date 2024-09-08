@@ -1,7 +1,7 @@
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Shared;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Authentications.Queries.GetUserRoles;
+namespace HelloDoctorApi.Application.Authentications.Queries.GetUserRoles;
 
 public record GetUserRolesCommand() : IRequest<Result<List<string?>>>;
 

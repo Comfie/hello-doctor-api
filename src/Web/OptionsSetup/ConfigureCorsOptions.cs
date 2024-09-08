@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Options;
 
-namespace ApiBaseTemplate.Web.OptionsSetup;
+namespace HelloDoctorApi.Web.OptionsSetup;
 
 public class ConfigureCorsOptions : IConfigureOptions<CorsOptions>
 {

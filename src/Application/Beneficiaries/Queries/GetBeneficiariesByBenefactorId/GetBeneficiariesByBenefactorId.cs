@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Beneficiaries.Models;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Beneficiaries.Models;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
+namespace HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
 
 public record GetBeneficiariesByMainMemberIdCommand(string MainMemberId) : IRequest<Result<List<BeneficiaryResponse>>>;
 

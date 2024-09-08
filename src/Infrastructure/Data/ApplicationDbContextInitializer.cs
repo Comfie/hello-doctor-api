@@ -1,11 +1,11 @@
-﻿using ApiBaseTemplate.Domain.Entities.Auth;
+﻿using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ApiBaseTemplate.Infrastructure.Data;
+namespace HelloDoctorApi.Infrastructure.Data;
 
 public static class InitializerExtensions
 {

@@ -1,10 +1,10 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Pharmacies.Models;
-using ApiBaseTemplate.Domain.Entities;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Pharmacies.Models;
+using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Commands.CreatePharmacy;
+namespace HelloDoctorApi.Application.Pharmacies.Commands.CreatePharmacy;
 
 public record CreatePharmacyCommand(CreatePharmacyRequest Request) : IRequest<Result<PharmacyResponse>>;
 

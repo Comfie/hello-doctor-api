@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace ApiBaseTemplate.Application.Common.Exceptions;
+namespace HelloDoctorApi.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

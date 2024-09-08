@@ -1,7 +1,7 @@
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Shared;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Authentications.Updates.UpdateUserRole;
+namespace HelloDoctorApi.Application.Authentications.Updates.UpdateUserRole;
 
 public record UpdateUserRoleCommand(string UserId, string Role) : IRequest<Result<bool>>;
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MimeKit;
 
-namespace ApiBaseTemplate.Application.Common.Models
+namespace HelloDoctorApi.Application.Common.Models
 {
     public class Message
     {

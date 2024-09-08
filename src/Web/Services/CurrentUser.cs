@@ -1,8 +1,7 @@
 ﻿using System.Security.Claims;
+using HelloDoctorApi.Application.Common.Interfaces;
 
-using ApiBaseTemplate.Application.Common.Interfaces;
-
-namespace ApiBaseTemplate.Web.Services;
+namespace HelloDoctorApi.Web.Services;
 
 public class CurrentUser : IUser
 {

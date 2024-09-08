@@ -1,7 +1,7 @@
-﻿using ApiBaseTemplate.Domain.Entities;
-using ApiBaseTemplate.Domain.Entities.Auth;
+﻿using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Entities.Auth;
 
-namespace ApiBaseTemplate.Application.Common.Interfaces;
+namespace HelloDoctorApi.Application.Common.Interfaces;
 
 public interface IApplicationDbContext
 {

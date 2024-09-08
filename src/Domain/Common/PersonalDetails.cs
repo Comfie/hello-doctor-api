@@ -1,4 +1,4 @@
-namespace ApiBaseTemplate.Domain.Common;
+namespace HelloDoctorApi.Domain.Common;
 
 public class PersonalDetails
 {

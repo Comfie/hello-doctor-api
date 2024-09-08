@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Entities;
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApiBaseTemplate.Infrastructure.Data;
+namespace HelloDoctorApi.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {

@@ -1,8 +1,8 @@
-using ApiBaseTemplate.Application.Authentications.Models;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Shared;
+using HelloDoctorApi.Application.Authentications.Models;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Shared;
 
-namespace ApiBaseTemplate.Application.Authentications.Commands.AuthenticateUser;
+namespace HelloDoctorApi.Application.Authentications.Commands.AuthenticateUser;
 
 public class AuthenticateUserCommand : IRequest<Result<AuthResponse>>
 {

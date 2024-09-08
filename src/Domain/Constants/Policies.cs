@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Constants;
+﻿namespace HelloDoctorApi.Domain.Constants;
 
 public abstract class Policies
 {

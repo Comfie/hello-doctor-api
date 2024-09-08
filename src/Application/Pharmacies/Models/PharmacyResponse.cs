@@ -1,4 +1,4 @@
-namespace ApiBaseTemplate.Application.Pharmacies.Models;
+namespace HelloDoctorApi.Application.Pharmacies.Models;
 
 public class PharmacyResponse
 {

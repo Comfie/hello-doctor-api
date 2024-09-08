@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Shared;
+﻿namespace HelloDoctorApi.Domain.Shared;
 
 public sealed class ValidationResult<TValue> : Result<TValue>, IValidationResult
 {

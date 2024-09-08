@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>ApiBaseTemplate.Application</RootNamespace>
-    <AssemblyName>ApiBaseTemplate.Application</AssemblyName>
+    <RootNamespace>HelloDoctorApi.Application</RootNamespace>
+    <AssemblyName>HelloDoctorApi.Application</AssemblyName>
 <!--    <Nullable>enable</Nullable>-->
 <!--    <ImplicitUsings>enable</ImplicitUsings>-->
   </PropertyGroup>
@@ -26,7 +26,6 @@
     <Folder Include="Beneficiaries\Queries\" />
     <Folder Include="Beneficiaries\Updates\" />
     <Folder Include="MainMembers\Commands\" />
-    <Folder Include="MainMembers\Models\" />
     <Folder Include="MainMembers\Queries\" />
     <Folder Include="MainMembers\Updates\" />
     <Folder Include="Pharmacies\Queries\" />

@@ -1,6 +1,8 @@
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Common;
+using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Enums;
 
-namespace ApiBaseTemplate.Domain.Entities;
+namespace HelloDoctorApi.Domain.Entities;
 
 public class Beneficiary : BaseAuditableEntity
 {

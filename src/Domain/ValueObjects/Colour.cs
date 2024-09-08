@@ -1,4 +1,7 @@
-﻿namespace ApiBaseTemplate.Domain.ValueObjects;
+﻿using HelloDoctorApi.Domain.Common;
+using HelloDoctorApi.Domain.Exceptions;
+
+namespace HelloDoctorApi.Domain.ValueObjects;
 
 public class Colour(string code) : ValueObject
 {

@@ -1,6 +1,6 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
 
-namespace ApiBaseTemplate.Web.Services
+namespace HelloDoctorApi.Web.Services
 {
     public class DateTimeService : IDateTimeService
     {

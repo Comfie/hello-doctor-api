@@ -1,6 +1,6 @@
-﻿using ApiBaseTemplate.Application.Common.Models;
+﻿using HelloDoctorApi.Application.Common.Models;
 
-namespace ApiBaseTemplate.Application.Common.Interfaces;
+namespace HelloDoctorApi.Application.Common.Interfaces;
 
 public interface IEmailService 
 {

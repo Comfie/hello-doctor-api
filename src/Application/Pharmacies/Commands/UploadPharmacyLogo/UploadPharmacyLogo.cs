@@ -1,9 +1,9 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Http;
 
-namespace ApiBaseTemplate.Application.Pharmacies.Commands.UploadPharmacyLogo;
+namespace HelloDoctorApi.Application.Pharmacies.Commands.UploadPharmacyLogo;
 
 public record UploadPharmacyLogoCommand(long Id, IFormFile File) : IRequest<Result<bool>>;
 

@@ -1,7 +1,7 @@
-﻿using ApiBaseTemplate.Domain.Shared;
+﻿using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiBaseTemplate.Web.Infrastructure;
+namespace HelloDoctorApi.Web.Infrastructure;
 
 [ApiController]
 public abstract class ApiController : ControllerBase

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
-using ApiBaseTemplate.Application.Common.Behaviours;
+using HelloDoctorApi.Application.Common.Behaviours;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ApiBaseTemplate.Application;
+namespace HelloDoctorApi.Application;
 
 public static class DependencyInjection
 {

@@ -1,7 +1,7 @@
-﻿using ApiBaseTemplate.Domain.Entities;
-using ApiBaseTemplate.Domain.Entities.Auth;
+﻿using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Entities.Auth;
 
-namespace ApiBaseTemplate.Application.Common.Models;
+namespace HelloDoctorApi.Application.Common.Models;
 
 public class LookupDto
 {

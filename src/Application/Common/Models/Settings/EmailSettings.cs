@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Application.Common.Models.Settings
+﻿namespace HelloDoctorApi.Application.Common.Models.Settings
 {
     public class EmailSettings
     {

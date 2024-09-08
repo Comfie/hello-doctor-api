@@ -1,17 +1,16 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Infrastructure.Data;
-using ApiBaseTemplate.Web.OptionsSetup;
-using ApiBaseTemplate.Web.Services;
-using Asp.Versioning;
+﻿using Asp.Versioning;
 using Grinderofl.FeatureFolders;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Infrastructure.Data;
+using HelloDoctorApi.Web.OptionsSetup;
+using HelloDoctorApi.Web.Services;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-
-namespace ApiBaseTemplate.Web;
+namespace HelloDoctorApi.Web;
 
 public static class DependencyInjection
 {

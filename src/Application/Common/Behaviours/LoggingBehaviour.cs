@@ -1,8 +1,8 @@
-﻿using ApiBaseTemplate.Application.Common.Interfaces;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
 using MediatR.Pipeline;
 using Microsoft.Extensions.Logging;
 
-namespace ApiBaseTemplate.Application.Common.Behaviours;
+namespace HelloDoctorApi.Application.Common.Behaviours;
 
 public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
 {

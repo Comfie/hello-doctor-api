@@ -2,14 +2,14 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Common.Models.Settings;
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Models.Settings;
+using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ApiBaseTemplate.Infrastructure.Identity;
+namespace HelloDoctorApi.Infrastructure.Identity;
 
 public class JwtService : IJwtService
 {

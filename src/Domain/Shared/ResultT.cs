@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Shared;
+﻿namespace HelloDoctorApi.Domain.Shared;
 
 public class Result<TValue> : Result
 {

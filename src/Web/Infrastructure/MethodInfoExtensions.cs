@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ApiBaseTemplate.Web.Infrastructure;
+namespace HelloDoctorApi.Web.Infrastructure;
 
 public static class MethodInfoExtensions
 {

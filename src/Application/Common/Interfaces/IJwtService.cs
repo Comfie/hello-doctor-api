@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using ApiBaseTemplate.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.IdentityModel.Tokens;
 
-namespace ApiBaseTemplate.Application.Common.Interfaces;
+namespace HelloDoctorApi.Application.Common.Interfaces;
 
 public interface IJwtService
 {

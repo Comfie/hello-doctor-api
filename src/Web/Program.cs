@@ -1,7 +1,7 @@
-using ApiBaseTemplate.Application;
-using ApiBaseTemplate.Infrastructure;
-using ApiBaseTemplate.Infrastructure.Data;
-using ApiBaseTemplate.Web;
+using HelloDoctorApi.Application;
+using HelloDoctorApi.Infrastructure;
+using HelloDoctorApi.Infrastructure.Data;
+using HelloDoctorApi.Web;
 using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

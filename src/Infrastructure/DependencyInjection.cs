@@ -1,13 +1,13 @@
 ﻿using System.Text;
-using ApiBaseTemplate.Application.Common.Interfaces;
-using ApiBaseTemplate.Application.Common.Models.Settings;
-using ApiBaseTemplate.Domain.Constants;
-using ApiBaseTemplate.Domain.Entities.Auth;
-using ApiBaseTemplate.Domain.Repositories;
-using ApiBaseTemplate.Infrastructure.Data;
-using ApiBaseTemplate.Infrastructure.Data.Interceptors;
-using ApiBaseTemplate.Infrastructure.Identity;
-using ApiBaseTemplate.Infrastructure.OptionsSetup;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Common.Models.Settings;
+using HelloDoctorApi.Domain.Constants;
+using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Infrastructure.Data;
+using HelloDoctorApi.Infrastructure.Data.Interceptors;
+using HelloDoctorApi.Infrastructure.Identity;
+using HelloDoctorApi.Infrastructure.OptionsSetup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,7 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 
-namespace ApiBaseTemplate.Infrastructure;
+namespace HelloDoctorApi.Infrastructure;
 
 public static class DependencyInjection
 {

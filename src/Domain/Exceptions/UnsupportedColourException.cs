@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Domain.Exceptions;
+﻿namespace HelloDoctorApi.Domain.Exceptions;
 
 public class UnsupportedColourException : Exception
 {

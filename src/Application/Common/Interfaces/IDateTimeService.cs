@@ -1,4 +1,4 @@
-﻿namespace ApiBaseTemplate.Application.Common.Interfaces
+﻿namespace HelloDoctorApi.Application.Common.Interfaces
 {
     public interface IDateTimeService 
     {
