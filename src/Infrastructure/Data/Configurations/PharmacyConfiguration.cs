@@ -46,5 +46,9 @@ public class PharmacyConfiguration : IEntityTypeConfiguration<Pharmacy>
         builder
             .Property(p => p.IsDeleted)
             .HasDefaultValue(false);
+        
+        builder
+            .HasMany(p => p.Doctors)
+            .WithMany(p => p.Pharmacies);
     }
 }

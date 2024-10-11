@@ -1,4 +1,3 @@
-using HelloDoctorApi.Domain.Common;
 using HelloDoctorApi.Domain.Entities.Auth;
 
 namespace HelloDoctorApi.Domain.Entities;

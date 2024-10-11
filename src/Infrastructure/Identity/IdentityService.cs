@@ -1,10 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using HelloDoctorApi.Domain.Entities;
 using HelloDoctorApi.Application.Authentications.Models;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Application.Common.Models;
 using HelloDoctorApi.Application.Common.Models.Settings;
+using HelloDoctorApi.Domain.Entities;
 using HelloDoctorApi.Domain.Entities.Auth;
 using HelloDoctorApi.Domain.Enums;
 using HelloDoctorApi.Domain.Repositories;
@@ -16,7 +16,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OtpNet;
-
 
 namespace HelloDoctorApi.Infrastructure.Identity;
 
@@ -33,6 +32,7 @@ public class IdentityService : IIdentityService
     private readonly AppSettings _appSettings;
     private readonly IEmailService _emailService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMainMemberService _mainMemberService;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
@@ -43,7 +43,8 @@ public class IdentityService : IIdentityService
         IJwtService jwtService, IDateTimeService dateTime,
         ApplicationDbContext context,
         IOptions<AppSettings> appSettings,
-        IEmailService emailService, IUnitOfWork unitOfWork)
+        IEmailService emailService, IUnitOfWork unitOfWork, 
+        IMainMemberService mainMemberService)
     {
         _userManager = userManager;
         _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
@@ -56,6 +57,7 @@ public class IdentityService : IIdentityService
         _appSettings = appSettings.Value;
         _emailService = emailService;
         _unitOfWork = unitOfWork;
+        _mainMemberService = mainMemberService;
     }
 
     public async Task<string?> GetUserNameAsync(string userId, CancellationToken cancellationToken = default)
@@ -134,8 +136,7 @@ public class IdentityService : IIdentityService
             await _userManager.AddToRoleAsync(applicationUser, role);
             await CreateUserTypeBasedOnRole(cancellationToken, role, applicationUser);
         }
-
-
+        
         if (!result.Succeeded)
             return Result.Failure<bool>(new Error("Creating User", "Failed to create user"));
 
@@ -147,61 +148,68 @@ public class IdentityService : IIdentityService
     private async Task CreateUserTypeBasedOnRole(CancellationToken cancellationToken, string role,
         ApplicationUser applicationUser)
     {
-        
-        if(role == UserType.SuperAdministrator.ToString())
+        switch (role)
         {
-            //create super admin
-            var superAdmin = new SuperAdministrator()
-            {
-                UserId = applicationUser.Id,
-                User = applicationUser
-            };
-            _context.SuperAdministrators.Add(superAdmin);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-        
-        if(role == UserType.SystemAdministrator.ToString())
-        {
-            //create super admin
-            var systemAdministrator = new SystemAdministrator()
-            {
-                UserId = applicationUser.Id,
-                User = applicationUser
-            };
-            _context.SystemAdministrators.Add(systemAdministrator);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-        
-        if (role == UserType.MainMember.ToString())
-        {
-            //create main member
-            var mainMember = new MainMember
-            {
-                Code = "generate random code",
-                AccountId = applicationUser.Id,
-                Account = applicationUser,
-            };
-            _context.MainMembers.Add(mainMember);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-        }
-
-        if (role == UserType.Pharmacist.ToString())
-        {
-            var getPharmacy =
-                await _context.Pharmacies.FirstOrDefaultAsync(pharmacy => pharmacy.Id == 1, cancellationToken);
-            if (getPharmacy is not null)
-            {
-                //create pharmacist
-                var pharmacist = new Pharmacist()
+            case nameof(UserType.SuperAdministrator):
+                var superAdmin = new SuperAdministrator()
                 {
-                    Pharmacy = getPharmacy,
-                    PharmacyId = getPharmacy.Id,
+                    UserId = applicationUser.Id,
+                    User = applicationUser
+                };
+                _context.SuperAdministrators.Add(superAdmin);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                break;
+            case nameof(UserType.SystemAdministrator):
+                var systemAdministrator = new SystemAdministrator()
+                {
+                    UserId = applicationUser.Id,
+                    User = applicationUser
+                };
+                _context.SystemAdministrators.Add(systemAdministrator);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                break;
+            case nameof(UserType.MainMember):
+                var mainMember = new MainMember
+                {
+                    Code = await _mainMemberService.GenerateUniqueMemberNumberAsync(cancellationToken),
                     AccountId = applicationUser.Id,
                     Account = applicationUser,
                 };
-                _context.Pharmacists.Add(pharmacist);
+                _context.MainMembers.Add(mainMember);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-            }
+                break;
+            case nameof(UserType.Pharmacist):
+                var getPharmacy =
+                    await _context.Pharmacies.FirstOrDefaultAsync(pharmacy => pharmacy.Id == 1, cancellationToken);
+                if (getPharmacy is not null)
+                {
+                    var pharmacist = new Pharmacist()
+                    {
+                        Pharmacy = getPharmacy,
+                        PharmacyId = getPharmacy.Id,
+                        AccountId = applicationUser.Id,
+                        Account = applicationUser,
+                    };
+                    _context.Pharmacists.Add(pharmacist);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+                break;
+            case nameof(UserType.Doctor):
+                var getDoctor =
+                    await _context.Doctors.FirstOrDefaultAsync(doctor => doctor.Id == 1, cancellationToken);
+                if (getDoctor is not null)
+                {
+                    var doctor = new Doctor
+                    {
+                        FirstName = applicationUser.FirstName ?? String.Empty,
+                        LastName = applicationUser.LastName ?? String.Empty,
+                        EmailAddress = applicationUser.Email ?? String.Empty,
+                        PrimaryContact = applicationUser.PhoneNumber ?? String.Empty,
+                    };
+                    _context.Doctors.Add(doctor);
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+                break;
         }
     }
 

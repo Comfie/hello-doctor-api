@@ -1,6 +1,3 @@
-using HelloDoctorApi.Domain.Entities.Auth;
-using HelloDoctorApi.Domain.Common;
-
 namespace HelloDoctorApi.Domain.Entities;
 
 public class Doctor : BaseAuditableEntity
@@ -12,4 +9,6 @@ public class Doctor : BaseAuditableEntity
     public string? SecondaryContact { get; set; }
     public string? QualificationDescription { get; set; }
     public bool IsActive { get; set; }
+    public string? Speciality { get; set; }
+    public ICollection<Pharmacy>? Pharmacies { get; set; } = new List<Pharmacy>();
 }

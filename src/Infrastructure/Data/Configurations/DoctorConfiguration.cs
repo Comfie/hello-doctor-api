@@ -38,5 +38,8 @@ public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
         builder
             .Property(b => b.QualificationDescription)
             .HasMaxLength(100);
+        
+        builder.HasMany(d => d.Pharmacies)
+            .WithMany(p => p.Doctors);
     }
 }

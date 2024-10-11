@@ -14,5 +14,6 @@ public class ApplicationUser : IdentityUser
     public SuperAdministrator? SuperAdministrator { get; set; }
     public MainMember? MainMember { get; set; }
     public Pharmacist? Pharmacist { get; set; }
+    public Doctor? Doctor { get; set; }
     
 }

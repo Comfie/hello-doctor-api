@@ -1,5 +1,4 @@
-﻿using System.Text;
-using HelloDoctorApi.Application.Common.Interfaces;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Application.Common.Models.Settings;
 using HelloDoctorApi.Domain.Constants;
 using HelloDoctorApi.Domain.Entities.Auth;
@@ -8,6 +7,7 @@ using HelloDoctorApi.Infrastructure.Data;
 using HelloDoctorApi.Infrastructure.Data.Interceptors;
 using HelloDoctorApi.Infrastructure.Identity;
 using HelloDoctorApi.Infrastructure.OptionsSetup;
+using HelloDoctorApi.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -77,6 +77,7 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<IJwtService, JwtService>();
+        services.AddTransient<IMainMemberService, MainMainMemberService>();
         
         services.ConfigureApplicationCookie(options =>
         {

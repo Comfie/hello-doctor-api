@@ -32,24 +32,25 @@ public class CreateBeneficiaryCommandHandler : IRequestHandler<CreateBeneficiary
             LastName = request.Request.LastName,
             PhoneNumber = request.Request.PhoneNumber,
             EmailAddress = request.Request.EmailAddress,
+            BeneficiaryCode = "To Be Determined",
             MainMemberId = mainMember.Id,
             MainMember = mainMember
         };
-        
+
         var relationshipEnum = request.Request.Relationship switch
         {
             "sister" => RelationshipToMainMember.Sister,
             "brother" => RelationshipToMainMember.Brother,
             "parent" => RelationshipToMainMember.Parent,
             "child" => RelationshipToMainMember.Child,
-             _ => RelationshipToMainMember.Other
+            _ => RelationshipToMainMember.Other
         };
-        
+
         beneficiary.Relationship = relationshipEnum;
-        
+
         _context.Beneficiaries.Add(beneficiary);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         return Result.Success(beneficiary.Id);
     }
 }
