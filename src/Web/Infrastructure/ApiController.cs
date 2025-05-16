@@ -8,32 +8,38 @@ public abstract class ApiController : ControllerBase
 {
     protected readonly ISender Sender;
 
-    protected ApiController(ISender sender) => Sender = sender;
+    protected ApiController(ISender sender)
+    {
+        Sender = sender;
+    }
 
-    protected IActionResult HandleFailure(Result result) =>
-        result switch
+    protected IActionResult HandleFailure(ResultLocal resultLocal)
+    {
+        return resultLocal switch
         {
             { IsSuccess: true } => throw new InvalidOperationException(),
             IValidationResult validationResult =>
                 BadRequest(
                     CreateProblemDetails(
                         "Validation Error", StatusCodes.Status400BadRequest,
-                        result.Error,
+                        resultLocal.Error,
                         validationResult.Errors)),
             _ =>
                 BadRequest(
                     CreateProblemDetails(
                         "Bad Request",
                         StatusCodes.Status400BadRequest,
-                        result.Error))
+                        resultLocal.Error))
         };
+    }
 
     private static ProblemDetails CreateProblemDetails(
         string title,
         int status,
         Error error,
-        Error[]? errors = null) =>
-        new()
+        Error[]? errors = null)
+    {
+        return new ProblemDetails
         {
             Title = title,
             Type = error.Code,
@@ -41,4 +47,5 @@ public abstract class ApiController : ControllerBase
             Status = status,
             Extensions = { { nameof(errors), errors } }
         };
+    }
 }

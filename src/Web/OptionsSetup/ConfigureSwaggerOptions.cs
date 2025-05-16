@@ -8,10 +8,12 @@ namespace HelloDoctorApi.Web.OptionsSetup;
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
     private readonly IApiVersionDescriptionProvider _provider;
+
     public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
     {
         _provider = provider;
     }
+
     public void Configure(SwaggerGenOptions options)
     {
         foreach (var description in _provider.ApiVersionDescriptions)
@@ -42,11 +44,11 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
                 {
                     Reference = new OpenApiReference
                     {
-                        Type=ReferenceType.SecurityScheme,
-                        Id="Bearer"
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
                     }
                 },
-                new string[]{}
+                new string[] { }
             }
         });
     }

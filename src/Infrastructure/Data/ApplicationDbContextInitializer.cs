@@ -107,17 +107,18 @@ public class ApplicationDbContextInitializer
     {
         try
         {
-            string[] roles = [
-                "SystemAdministrator", 
+            string[] roles =
+            [
+                "SystemAdministrator",
                 "SuperAdministrator",
                 "Doctor",
-                "Beneficiary", 
-                "Pharmacist", 
-                "MainMember", 
+                "Beneficiary",
+                "Pharmacist",
+                "MainMember",
                 "LogisticsPartner",
                 "User"
             ];
-            
+
             foreach (var role in roles)
             {
                 var roleExists = await _roleManager.RoleExistsAsync(role);

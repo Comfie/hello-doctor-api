@@ -2,27 +2,25 @@
 
 public static class ResultExtensions
 {
-    public static Result<T> Ensure<T>(
-        this Result<T> result,
+    public static ResultLocal<T> Ensure<T>(
+        this ResultLocal<T> resultLocal,
         Func<T, bool> predicate,
         Error error)
     {
-        if (result.IsFailure)
+        if (resultLocal.IsFailure)
         {
-            return result;
+            return resultLocal;
         }
 
-        return predicate(result.Value) ?
-            result :
-            Result.Failure<T>(error);
+        return predicate(resultLocal.Value) ? resultLocal : ResultLocal.Failure<T>(error);
     }
 
-    public static Result<TOut> Map<TIn, TOut>(
-        this Result<TIn> result,
+    public static ResultLocal<TOut> Map<TIn, TOut>(
+        this ResultLocal<TIn> resultLocal,
         Func<TIn, TOut> mappingFunc)
     {
-        return result.IsSuccess ?
-            Result.Success(mappingFunc(result.Value)) :
-            Result.Failure<TOut>(result.Error);
+        return resultLocal.IsSuccess
+            ? ResultLocal.Success(mappingFunc(resultLocal.Value))
+            : ResultLocal.Failure<TOut>(resultLocal.Error);
     }
 }

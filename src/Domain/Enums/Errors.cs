@@ -7,5 +7,5 @@ public enum Errors
     GetUserError = 3,
     GetUsersError = 4,
     RevokeRoleError = 5,
-    None = 0,   
+    None = 0,
 }

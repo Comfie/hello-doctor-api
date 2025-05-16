@@ -15,5 +15,7 @@ public interface IApplicationDbContext
     DbSet<Doctor> Doctors { get; }
     DbSet<Pharmacist> Pharmacists { get; }
     DbSet<Prescription> Prescriptions { get; }
+    DbSet<PrescriptionNote> PrescriptionNotes { get; }
+    DbSet<PrescriptionStatusHistory> PrescriptionStatusHistories { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

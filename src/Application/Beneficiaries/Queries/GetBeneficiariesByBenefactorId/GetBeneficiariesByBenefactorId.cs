@@ -1,17 +1,9 @@
-﻿using HelloDoctorApi.Application.Beneficiaries.Models;
+﻿using Ardalis.Result;
+using HelloDoctorApi.Application.Beneficiaries.Models;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Domain.Shared;
 
-namespace HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
-
-public record GetBeneficiariesByMainMemberIdCommand(string MainMemberId) : IRequest<Result<List<BeneficiaryResponse>>>;
-
-public class GetBeneficiariesByMainMemberIdCommandValidator : AbstractValidator<GetBeneficiariesByMainMemberIdCommand>
-{
-    public GetBeneficiariesByMainMemberIdCommandValidator()
-    {
-    }
-}
+namespace HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByBenefactorId;
 
 public class
     GetBeneficiariesByMainMemberIdCommandHandler : IRequestHandler<GetBeneficiariesByMainMemberIdCommand,

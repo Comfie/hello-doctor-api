@@ -8,7 +8,6 @@ public class MainMemberConfiguration : IEntityTypeConfiguration<MainMember>
 {
     public void Configure(EntityTypeBuilder<MainMember> builder)
     {
-        
         builder.HasOne(mainMember => mainMember.Account)
             .WithOne(account => account.MainMember)
             .HasForeignKey<MainMember>(mainMember => mainMember.AccountId)
@@ -18,6 +17,5 @@ public class MainMemberConfiguration : IEntityTypeConfiguration<MainMember>
             .WithOne()
             .HasForeignKey(mainMember => mainMember.Id)
             .OnDelete(DeleteBehavior.Cascade);
-        
     }
 }

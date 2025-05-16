@@ -13,7 +13,7 @@ public class PharmacistConfiguration : IEntityTypeConfiguration<Pharmacist>
             .WithOne(user => user.Pharmacist)
             .HasForeignKey<Pharmacist>(pharmacist => pharmacist.AccountId)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         builder
             .HasOne(pharmacist => pharmacist.Pharmacy)
             .WithOne()

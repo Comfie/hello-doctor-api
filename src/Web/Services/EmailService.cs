@@ -9,8 +9,8 @@ namespace HelloDoctorApi.Web.Services;
 
 public class EmailService : IEmailService
 {
-    private ILogger<EmailService> _logger;
     private readonly EmailSettings _emailSettings;
+    private readonly ILogger<EmailService> _logger;
 
     public EmailService(IOptions<EmailSettings> emailSettings,
         ILogger<EmailService> logger)
@@ -40,7 +40,8 @@ public class EmailService : IEmailService
         emailMessage.To.AddRange(message.To);
         emailMessage.Subject = message.Subject;
 
-        var bodyBuilder = new BodyBuilder { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
+        var bodyBuilder = new BodyBuilder
+            { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
 
         if (message.Attachments != null && message.Attachments.Any())
         {
@@ -107,16 +108,10 @@ public class EmailService : IEmailService
 
             client.Send(mailMessage);
         }
-        catch
-        {
-            //log an error message or throw an exception, or both.
-            throw;
-        }
         finally
         {
             client.Disconnect(true);
             client.Dispose();
         }
     }
-
 }

@@ -15,7 +15,7 @@ public class Pharmacy : BaseAuditableEntity
     public bool IsDeleted { get; set; }
     public ICollection<Pharmacist>? Pharmacists { get; set; } = new List<Pharmacist>();
     public ICollection<Doctor>? Doctors { get; set; } = new List<Doctor>();
-    
+
     //it needs to be linked with a list of doctors
     //also 
 }

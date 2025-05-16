@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using Ardalis.Result;
 using HelloDoctorApi.Application.Authentications.Models;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Application.Common.Models;
@@ -43,7 +44,7 @@ public class IdentityService : IIdentityService
         IJwtService jwtService, IDateTimeService dateTime,
         ApplicationDbContext context,
         IOptions<AppSettings> appSettings,
-        IEmailService emailService, IUnitOfWork unitOfWork, 
+        IEmailService emailService, IUnitOfWork unitOfWork,
         IMainMemberService mainMemberService)
     {
         _userManager = userManager;
@@ -76,7 +77,7 @@ public class IdentityService : IIdentityService
         {
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
-                return Result.Failure<AuthResponse>(new Error("Getting User", "User not found"));
+                return Result<AuthResponse>.NotFound(new Error("Getting User", "User not found"));
 
             var refreshToken = _jwtService.GenerateRefreshToken(user);
 
@@ -101,10 +102,11 @@ public class IdentityService : IIdentityService
                 RefreshToken = refreshToken,
                 RefreshTokenExpiration = user.RefreshTokenExpiryTime
             };
-            return Result.Success<AuthResponse>(authResponse);
+            await _userManager.UpdateAsync(user);
+            return Result<AuthResponse>.Success(authResponse);
         }
 
-        return Result.Failure<AuthResponse>(new Error("404", "User not found"));
+        return Result<AuthResponse>.NotFound(new Error("Authenticate User", "User not found"));
     }
 
     public async Task<Result<bool>> CreateUserAsync(CreateUserRequest createUserRequest,
@@ -114,7 +116,7 @@ public class IdentityService : IIdentityService
 
         if (checkUser is not null)
 
-            return Result.Failure<bool>(new Error("Creating User", "User with this email already exists"));
+            return Result<bool>.Error(new Error("Creating User", "User with this email already exists"));
 
         var role = "User";
 
@@ -136,9 +138,9 @@ public class IdentityService : IIdentityService
             await _userManager.AddToRoleAsync(applicationUser, role);
             await CreateUserTypeBasedOnRole(cancellationToken, role, applicationUser);
         }
-        
+
         if (!result.Succeeded)
-            return Result.Failure<bool>(new Error("Creating User", "Failed to create user"));
+            return Result<bool>.Error(new Error("Creating User", "Failed to create user"));
 
         //send email to system admin to activate account 
 
@@ -193,6 +195,7 @@ public class IdentityService : IIdentityService
                     _context.Pharmacists.Add(pharmacist);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
+
                 break;
             case nameof(UserType.Doctor):
                 var getDoctor =
@@ -209,6 +212,7 @@ public class IdentityService : IIdentityService
                     _context.Doctors.Add(doctor);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
                 }
+
                 break;
         }
     }
@@ -219,7 +223,7 @@ public class IdentityService : IIdentityService
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user is null)
-            return Result.Failure<bool>(new Error("Checking Role", "User not found"));
+            return Result<bool>.Error(new Error("Checking Role", "User not found"));
 
         var result = await _userManager.IsInRoleAsync(user, role);
 
@@ -232,7 +236,7 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
-            return Result.Failure<bool>(new Error("Updating Role", "User not found"));
+            return Result<bool>.Error(new Error("Updating Role", "User not found"));
 
         // Remove existing roles
         var roles = await _userManager.GetRolesAsync(user);
@@ -243,7 +247,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            Result.Failure<bool>(new Error("Updating Role", "Failed to update user role"));
+            Result<bool>.Error(new Error("Updating Role", "Failed to update user role"));
         }
 
         // Save changes
@@ -251,7 +255,7 @@ public class IdentityService : IIdentityService
 
         if (!updateResult.Succeeded)
         {
-            Result.Failure<bool>(new Error("Updating Role", "Failed to update user role"));
+            Result<bool>.Error(new Error("Updating Role", "Failed to update user role"));
         }
 
         return Result.Success(true);
@@ -263,7 +267,7 @@ public class IdentityService : IIdentityService
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user is null)
-            return Result.Failure<bool>(new Error("Authorize User", "User not found"));
+            return Result<bool>.Error(new Error("Authorize User", "User not found"));
 
         var principal = await _userClaimsPrincipalFactory.CreateAsync(user);
 
@@ -277,13 +281,13 @@ public class IdentityService : IIdentityService
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user is null)
-            return Result.Failure<string>(new Error("Delete User", "User not found"));
+            return Result<String>.NotFound(new Error("Delete User", "User not found"));
 
         var result = await _userManager.DeleteAsync(user);
 
         return result.Succeeded
             ? Result.Success<string>("User deleted successfully")
-            : Result.Failure<string>(new Error("Delete User",
+            : Result<String>.Error(new Error("Delete User",
                 result.Errors.Select(e => e.Description).ToString() ?? "Failed to delete user"));
     }
 
@@ -293,7 +297,7 @@ public class IdentityService : IIdentityService
 
         return result.Succeeded
             ? Result.Success<string>("User deleted successfully")
-            : Result.Failure<string>(new Error("Delete User",
+            : Result<String>.Error(new Error("Delete User",
                 result.Errors.Select(e => e.Description).ToString() ?? "Failed to delete user"));
     }
 
@@ -303,7 +307,7 @@ public class IdentityService : IIdentityService
         var account = await _userManager.FindByIdAsync(userId);
 
         if (account is null)
-            return Result.Failure<UserDetailsResponse>(new Error("Get User Error", "User not found"));
+            return Result<UserDetailsResponse>.NotFound(new Error("Get User Error", "User not found"));
 
 
         var user = new UserDetailsResponse()
@@ -328,25 +332,25 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
-            return Result.Failure<bool>(new Error("Revoke Role", "User not found"));
+            return Result<bool>.Error(new Error("Revoke Role", "User not found"));
 
         if (!await _userManager.IsInRoleAsync(user, role))
         {
-            return Result.Failure<bool>(new Error("Revoke Role", "User not in role found"));
+            return Result<bool>.Error(new Error("Revoke Role", "User not in role found"));
         }
 
         var result = await _userManager.RemoveFromRoleAsync(user, role);
 
         if (!result.Succeeded)
         {
-            return Result.Failure<bool>(new Error("Revoke Role", "Unable to remove user from role"));
+            return Result<bool>.Error(new Error("Revoke Role", "Unable to remove user from role"));
         }
 
         var updateResult = await _userManager.UpdateAsync(user);
 
         if (!updateResult.Succeeded)
         {
-            return Result.Failure<bool>(new Error("Revoke Role", "Failed to update user"));
+            return Result<bool>.Error(new Error("Revoke Role", "Failed to update user"));
         }
 
         return Result.Success(true);
@@ -438,7 +442,7 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByIdAsync(userId);
         if (user is null)
-            return Result.Failure<UserDetailsResponse>(new Error("Update User", "User not found"));
+            return Result<UserDetailsResponse>.NotFound(new Error("Update User", "User not found"));
 
         user.FirstName = updateUserRequest.FirstName;
         user.LastName = updateUserRequest.LastName;
@@ -449,7 +453,7 @@ public class IdentityService : IIdentityService
 
         if (!result.Succeeded)
         {
-            return Result.Failure<UserDetailsResponse>(new Error("Update User", "Failed to update user"));
+            return Result<UserDetailsResponse>.Error(new Error("Update User", "Failed to update user"));
         }
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -474,7 +478,7 @@ public class IdentityService : IIdentityService
         var user = await _userManager.FindByEmailAsync(updateUserPasswordRequest.Email);
         if (user is null)
         {
-            return Result.Failure<bool>(new Error("Reset Password", "User not found"));
+            return Result<bool>.NotFound(new Error("Reset Password", "User not found"));
         }
 
         var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -482,7 +486,7 @@ public class IdentityService : IIdentityService
         var result = await _userManager.ResetPasswordAsync(user, resetToken, updateUserPasswordRequest.Password);
         if (!result.Succeeded)
         {
-            return Result.Failure<bool>(new Error("Reset Password", "Failed to reset password"));
+            return Result<bool>.Error(new Error("Reset Password", "Failed to reset password"));
         }
 
         return Result.Success(true);
@@ -492,7 +496,7 @@ public class IdentityService : IIdentityService
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user is null)
-            return Result.Failure<bool>(new Error("Forgot Password", "User not found"));
+            return Result<bool>.NotFound(new Error("Forgot Password", "User not found"));
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -529,7 +533,7 @@ public class IdentityService : IIdentityService
 
         if (oneTimePin is null)
         {
-            return Result.Failure<bool>(new Error("Confirm Verification", "OTP code not found"));
+            return Result<bool>.NotFound(new Error("Confirm Verification", "OTP code not found"));
         }
 
         var utf8 = new UTF8Encoding();

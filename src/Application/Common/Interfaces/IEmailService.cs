@@ -2,9 +2,10 @@
 
 namespace HelloDoctorApi.Application.Common.Interfaces;
 
-public interface IEmailService 
+public interface IEmailService
 {
     Task<bool> SendEmailAsync(Message message,
         CancellationToken cancellationToken = default);
+
     void SendEmail(Message message);
 }

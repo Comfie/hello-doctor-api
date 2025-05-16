@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>HelloDoctorApi.Domain</RootNamespace>
-    <AssemblyName>HelloDoctorApi.Domain</AssemblyName>
-    <PackageId>HelloDoctorApi.Domain</PackageId>
-    <Authors>HelloDoctorApi.Domain</Authors>
-    <Company>HelloDoctorApi.Domain</Company>
-    <Product>HelloDoctorApi.Domain</Product>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>HelloDoctorApi.Domain</RootNamespace>
+        <AssemblyName>HelloDoctorApi.Domain</AssemblyName>
+        <PackageId>HelloDoctorApi.Domain</PackageId>
+        <Authors>HelloDoctorApi.Domain</Authors>
+        <Company>HelloDoctorApi.Domain</Company>
+        <Product>HelloDoctorApi.Domain</Product>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MediatR"/>
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MediatR"/>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Events\"/>
+    </ItemGroup>
 
 </Project>

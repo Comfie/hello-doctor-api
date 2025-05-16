@@ -1,4 +1,5 @@
-﻿using HelloDoctorApi.Domain.Common;
+﻿using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Common;
 using HelloDoctorApi.Domain.Repositories;
 using HelloDoctorApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace HelloDoctorApi.Infrastructure;
 internal sealed class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly IDateTimeService _dateTime;
 
-    public UnitOfWork(ApplicationDbContext dbContext)
+    public UnitOfWork(ApplicationDbContext dbContext, IDateTimeService dateTime)
     {
         _dbContext = dbContext;
+        _dateTime = dateTime;
     }
 
     public Task SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -21,6 +24,7 @@ internal sealed class UnitOfWork : IUnitOfWork
 
         return _dbContext.SaveChangesAsync(cancellationToken);
     }
+
     private void UpdateAuditableEntities()
     {
         IEnumerable<EntityEntry<BaseAuditableEntity>> entries =
@@ -33,13 +37,13 @@ internal sealed class UnitOfWork : IUnitOfWork
             if (entityEntry.State == EntityState.Added)
             {
                 entityEntry.Property(a => a.Created)
-                    .CurrentValue = DateTime.UtcNow;
+                    .CurrentValue = _dateTime.OffsetNow;
             }
 
             if (entityEntry.State == EntityState.Modified)
             {
                 entityEntry.Property(a => a.LastModified)
-                    .CurrentValue = DateTime.UtcNow;
+                    .CurrentValue = _dateTime.OffsetNow;
             }
         }
     }

@@ -1,6 +1,7 @@
-﻿using HelloDoctorApi.Application.Common.Models;
+﻿using Ardalis.Result;
 using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Identity;
+using Result = Ardalis.Result.Result;
 
 namespace HelloDoctorApi.Infrastructure.Identity
 {
@@ -10,8 +11,8 @@ namespace HelloDoctorApi.Infrastructure.Identity
         {
             return result.Succeeded
                 ? Result.Success<string>("Operation completed successfully.")
-                : Result.Failure<string>(new Error("IdentityResult", result.Errors.Select(e => e.Description).ToString() ?? "Failed to complete operation"));
+                : Result<string>.Error(new Error("IdentityResult",
+                    result.Errors.Select(e => e.Description).ToString() ?? "Failed to complete operation"));
         }
-
     }
 }

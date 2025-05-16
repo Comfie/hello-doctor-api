@@ -13,44 +13,43 @@ public class BeneficiaryConfiguration : IEntityTypeConfiguration<Beneficiary>
             .WithOne()
             .HasForeignKey<Beneficiary>(o => o.MainMemberId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder
             .Property(b => b.FirstName)
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(b => b.LastName)
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(b => b.EmailAddress)
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(b => b.PhoneNumber)
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .HasIndex(b => b.EmailAddress)
             .IsUnique();
-        
+
         builder
             .HasIndex(b => b.PhoneNumber)
             .IsUnique();
-        
+
         builder
             .HasIndex(b => b.FirstName);
-        
+
         builder
             .HasIndex(b => b.LastName);
-        
+
         builder
             .Property(o => o.Relationship)
             .HasConversion<string>();
-        
     }
 }

@@ -60,7 +60,7 @@ public static class DependencyInjection
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
-        
+
         services.ConfigureOptions<JwtBearerOptionsSetup>();
 
         services.AddAuthorizationBuilder();
@@ -70,7 +70,7 @@ public static class DependencyInjection
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        
+
         services.Configure<DataProtectionTokenProviderOptions>(opt =>
             opt.TokenLifespan = TimeSpan.FromHours(2));
 
@@ -78,7 +78,7 @@ public static class DependencyInjection
         services.AddTransient<IIdentityService, IdentityService>();
         services.AddTransient<IJwtService, JwtService>();
         services.AddTransient<IMainMemberService, MainMainMemberService>();
-        
+
         services.ConfigureApplicationCookie(options =>
         {
             options.Events.OnRedirectToLogin = context =>

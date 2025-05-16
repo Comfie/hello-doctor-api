@@ -9,10 +9,12 @@ namespace HelloDoctorApi.Infrastructure.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    {
+    }
 
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
-    public DbSet<SuperAdministrator> SuperAdministrators  => Set<SuperAdministrator>();
+    public DbSet<SuperAdministrator> SuperAdministrators => Set<SuperAdministrator>();
     public DbSet<SystemAdministrator> SystemAdministrators => Set<SystemAdministrator>();
     public DbSet<OneTimePin> OneTimePins => Set<OneTimePin>();
     public DbSet<Beneficiary> Beneficiaries => Set<Beneficiary>();
@@ -21,6 +23,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Doctor> Doctors => Set<Doctor>();
     public DbSet<Pharmacist> Pharmacists => Set<Pharmacist>();
     public DbSet<Prescription> Prescriptions => Set<Prescription>();
+    public DbSet<PrescriptionNote> PrescriptionNotes => Set<PrescriptionNote>();
+    public DbSet<PrescriptionStatusHistory> PrescriptionStatusHistories => Set<PrescriptionStatusHistory>();
+    public DbSet<FileUpload> FileUploads => Set<FileUpload>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

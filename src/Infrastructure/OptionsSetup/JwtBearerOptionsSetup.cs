@@ -9,6 +9,7 @@ namespace HelloDoctorApi.Infrastructure.OptionsSetup
     public class JwtBearerOptionsSetup : IConfigureNamedOptions<JwtBearerOptions>
     {
         private readonly AppSettings _appSettings;
+
         public JwtBearerOptionsSetup(IOptions<AppSettings> appSettings)
         {
             _appSettings = appSettings.Value;

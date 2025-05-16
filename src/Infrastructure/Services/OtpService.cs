@@ -1,4 +1,5 @@
 using System.Text;
+using Ardalis.Result;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Domain.Entities.Auth;
 using HelloDoctorApi.Domain.Repositories;
@@ -34,7 +35,7 @@ public class OtpService : IOtpService
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
-            return Result.Failure<bool>(new Error("Send Otp", "User not found"));
+            return Result<bool>.NotFound(new Error("Send Otp", "User not found"));
 
         var formattedPhoneNumber = phoneNumber.Replace("+", "").Replace(" ", "");
 
@@ -48,11 +49,12 @@ public class OtpService : IOtpService
 
         if (otp is null)
         {
-            otp = new OneTimePin { 
-                UserId = user.Id, 
-                User = user, 
-                Counter = 1, 
-                LastIssuedAt = _dateTime.Now 
+            otp = new OneTimePin
+            {
+                UserId = user.Id,
+                User = user,
+                Counter = 1,
+                LastIssuedAt = _dateTime.Now
             };
             await _applicationDbContext.OneTimePins.AddAsync(otp, cancellationToken);
         }
@@ -60,7 +62,7 @@ public class OtpService : IOtpService
         {
             if ((_dateTime.Now - otp.LastIssuedAt).TotalSeconds < 30)
             {
-                return Result.Failure<bool>(new Error("Send Otp", "Please try again after 30 seconds"));
+                return Result<bool>.Error(new Error("Send Otp", "Please try again after 30 seconds"));
             }
 
             otp.Counter += 1;
@@ -71,7 +73,7 @@ public class OtpService : IOtpService
 
         var message =
             $"This is your One Time Password: {hotp.ComputeHOTP(otp.Counter)} from Admin. For security reasons, do not share this code.";
-        
+
         return Result.Success(true);
     }
 

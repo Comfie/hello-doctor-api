@@ -1,4 +1,5 @@
-﻿using Asp.Versioning;
+﻿using Amazon.S3;
+using Asp.Versioning;
 using Grinderofl.FeatureFolders;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Infrastructure.Data;
@@ -18,10 +19,27 @@ public static class DependencyInjection
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
         
+        services.Configure<S3FileStoreOptions>(
+            configuration.GetSection(S3FileStoreOptions.ConfigurationSection));
         services.AddScoped<IUser, CurrentUser>();
         services.AddScoped<IDateTimeService, DateTimeService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IChecksumService, Sha256ChecksumService>();
+        services.AddScoped<IDocumentService, DocumentService>();
+        services.AddScoped<IEmailService, EmailService>();
         services.AddHttpClient<ISmsService, SmsService>();
+        
+        services.AddDefaultAWSOptions(configuration.GetAWSOptions());
+        services.AddAWSService<IAmazonS3>();
+        
+        if (configuration.GetValue<bool>("FileStorage:UseS3Storage"))
+        {
+            services.AddScoped<IFileStoreService, S3FileStoreService>();
+        }
+        else
+        {
+            services.AddScoped<IFileStoreService, LocalFileStoreService>();
+        }
 
         services.AddHttpContextAccessor();
 
@@ -29,17 +47,17 @@ public static class DependencyInjection
         services.AddTransient<IConfigureOptions<CorsOptions>, ConfigureCorsOptions>();
 
         services.AddHealthChecks()
-            .AddNpgSql(configuration.GetConnectionString("DefaultConnection") ?? String.Empty)
-            .AddDbContextCheck<ApplicationDbContext>();  //this one only necessary if you have multiple db context
+            .AddNpgSql(configuration.GetConnectionString("DefaultConnection") ?? string.Empty)
+            .AddDbContextCheck<ApplicationDbContext>(); //this one only necessary if you have multiple db context
 
         services.AddExceptionHandler<CustomExceptionHandler>();
-        
+
         // services.AddRazorPages();
 
         // Customise default API behaviour
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
-        
+
         services.AddApiVersioning(options =>
             {
                 options.DefaultApiVersion = new ApiVersion(1);
@@ -61,12 +79,11 @@ public static class DependencyInjection
             .AddFeatureFolders()
             .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
-        
+
         // Register the Swagger generator, defining 1 or more Swagger documents
         services.AddSwaggerGen();
         services.AddCors();
 
         return services;
     }
-    
 }

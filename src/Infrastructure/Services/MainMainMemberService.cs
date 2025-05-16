@@ -23,28 +23,29 @@ public class MainMainMemberService : IMainMemberService
 
     public async Task<string> GenerateUniqueMemberNumberAsync(CancellationToken cancellationToken = default)
     {
-        const string Prefix = "CT";
-        const int NumberLength = 4; // We want "CT" + 4 digits = 6 characters
+        const string prefix = "CT";
+        const int numberLength = 4; // We want "CT" + 4 digits = 6 characters
 
         // Get the highest existing member number
-        string? lastMemberNumber = await GetLastMemberNumberAsync(cancellationToken);
+        var lastMemberNumber = await _applicationDbContext.MainMembers
+            .OrderByDescending(m => m.Code)
+            .Select(m => m.Code)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        int newNumber = 1;
+        var newNumber = 1;
 
-        if (!string.IsNullOrEmpty(lastMemberNumber) && lastMemberNumber.StartsWith(Prefix))
+        if (!string.IsNullOrEmpty(lastMemberNumber) && lastMemberNumber.StartsWith(prefix))
         {
-            // Extract the numeric part from the last member number
-            string numberPart = lastMemberNumber.Substring(Prefix.Length);
+            var numberPart = lastMemberNumber.Substring(prefix.Length);
 
             // Parse and increment it
-            if (int.TryParse(numberPart, out int currentNumber))
+            if (int.TryParse(numberPart, out var currentNumber))
             {
                 newNumber = currentNumber + 1;
             }
         }
 
-        // Generate the new member number, ensuring it is 4 digits
-        string newMemberNumber = $"{Prefix}{newNumber.ToString().PadLeft(NumberLength, '0')}";
+        var newMemberNumber = $"{prefix}{newNumber.ToString().PadLeft(numberLength, '0')}";
 
         return newMemberNumber;
     }

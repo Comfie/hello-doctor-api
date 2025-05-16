@@ -1,3 +1,5 @@
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 using Asp.Versioning;
 using HelloDoctorApi.Application.Pharmacies.Commands.CreatePharmacy;
 using HelloDoctorApi.Application.Pharmacies.Commands.UploadPharmacyLogo;
@@ -6,13 +8,13 @@ using HelloDoctorApi.Application.Pharmacies.Queries.GetActivePharmacies;
 using HelloDoctorApi.Application.Pharmacies.Queries.GetAllPharmacies;
 using HelloDoctorApi.Application.Pharmacies.Queries.GetByIdPharmacy;
 using HelloDoctorApi.Application.Pharmacies.Updates.DeletePharmacy;
-using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
+[TranslateResultToActionResult]
 public class PharmacyController : ApiController
 {
     public PharmacyController(ISender sender) : base(sender)
@@ -20,7 +22,7 @@ public class PharmacyController : ApiController
     }
 
     /// <summary>
-    /// Creates a new pharmacy
+    ///     Creates a new pharmacy
     /// </summary>
     /// <param name="request">the details for the pharmacy</param>
     /// <param name="cancellationToken"></param>
@@ -28,16 +30,16 @@ public class PharmacyController : ApiController
     [HttpPost("create")]
     [ProducesResponseType(typeof(PharmacyResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreatePharmacy([FromBody] CreatePharmacyRequest request,
+    public async Task<Result<PharmacyResponse>> CreatePharmacy([FromBody] CreatePharmacyRequest request,
         CancellationToken cancellationToken)
     {
-        Result<PharmacyResponse> response = await Sender.Send(new CreatePharmacyCommand(request), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new CreatePharmacyCommand(request), cancellationToken);
+        return response;
     }
 
     //upload logo
     /// <summary>
-    /// Upload logo
+    ///     Upload logo
     /// </summary>
     /// <param name="id">pharmacy identifier</param>
     /// <param name="file"></param>
@@ -46,55 +48,55 @@ public class PharmacyController : ApiController
     [HttpPut("upload-logo/{id}")]
     [ProducesResponseType(typeof(PharmacyResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UploadLogo(long id, IFormFile file,
+    public async Task<Result<bool>> UploadLogo(long id, IFormFile file,
         CancellationToken cancellationToken)
     {
-        Result<bool> response = await Sender.Send(new UploadPharmacyLogoCommand(id, file), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new UploadPharmacyLogoCommand(id, file), cancellationToken);
+        return response;
     }
 
     /// <summary>
-    /// Get all beneficiary
+    ///     Get all beneficiary
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>list of all pharmacies</returns>
     [HttpGet("get-all-pharmacies")]
-    public async Task<IActionResult> GetAllPharmacies(CancellationToken cancellationToken)
+    public async Task<Result<List<PharmacyResponse>>> GetAllPharmacies(CancellationToken cancellationToken)
     {
-        Result<List<PharmacyResponse>>
+        var
             response = await Sender.Send(new GetAllPharmaciesCommand(), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return response;
     }
 
     /// <summary>
-    /// Get active pharmacies
+    ///     Get active pharmacies
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>list of active pharmacies</returns>
     [HttpGet("get-active-pharmacies")]
-    public async Task<IActionResult> GetActivePharmacies(CancellationToken cancellationToken)
+    public async Task<Result<List<PharmacyResponse>>> GetActivePharmacies(CancellationToken cancellationToken)
     {
-        Result<List<PharmacyResponse>>
+        var
             response = await Sender.Send(new GetActivePharmaciesCommand(), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return response;
     }
 
     /// <summary>
-    /// Get pharmacy by id
+    ///     Get pharmacy by id
     /// </summary>
     /// <param name="id">pharmacy identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>pharmacy details</returns>
     [HttpGet("get-pharmacy/{id}")]
-    public async Task<IActionResult> GetPharmacyById(long id, CancellationToken cancellationToken)
+    public async Task<Result<PharmacyResponse>> GetPharmacyById(long id, CancellationToken cancellationToken)
     {
-        Result<PharmacyResponse> response = await Sender.Send(new GetByIdPharmacyCommand(id), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new GetByIdPharmacyCommand(id), cancellationToken);
+        return response;
     }
 
 
     /// <summary>
-    /// Delete pharmacy
+    ///     Delete pharmacy
     /// </summary>
     /// <param name="id">pharmacy identifier</param>
     /// <param name="cancellationToken"></param>
@@ -102,9 +104,9 @@ public class PharmacyController : ApiController
     [HttpPut("delete-pharmacy/{id}")]
     [ProducesResponseType(typeof(PharmacyResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeletePharmacy(long id, CancellationToken cancellationToken)
+    public async Task<Result<bool>> DeletePharmacy(long id, CancellationToken cancellationToken)
     {
-        Result<bool> response = await Sender.Send(new DeletePharmacyCommand(id), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new DeletePharmacyCommand(id), cancellationToken);
+        return response;
     }
 }

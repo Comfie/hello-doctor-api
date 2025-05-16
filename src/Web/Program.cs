@@ -1,13 +1,12 @@
+using Asp.Versioning.ApiExplorer;
+using HealthChecks.UI.Client;
 using HelloDoctorApi.Application;
 using HelloDoctorApi.Infrastructure;
 using HelloDoctorApi.Infrastructure.Data;
 using HelloDoctorApi.Web;
-using Asp.Versioning.ApiExplorer;
-using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +15,7 @@ try
     Log.Logger = new LoggerConfiguration()
         .WriteTo.Console()
         .CreateLogger();
-    
+
     Log.Information("starting server.");
 
     builder.Host.UseSerilog((context, loggerConfiguration) =>
@@ -31,7 +30,7 @@ try
     builder.Services.AddWebServices(builder.Configuration);
 
     var app = builder.Build();
-    
+
     // Initialise and seed database
     await app.InitialiseDatabaseAsync();
 
@@ -43,25 +42,24 @@ try
         {
             var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
             foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-            {
-                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",  description.GroupName.ToUpperInvariant());
-            }
+                options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                    description.GroupName.ToUpperInvariant());
         });
     }
-    
+
     app.UseSerilogRequestLogging();
     app.UseHealthChecks("/health");
-    
+
     app.UseStaticFiles();
     app.UseHttpsRedirection();
-    
+
     app.UseAuthentication();
     app.UseAuthorization();
-    
+
     app.UseExceptionHandler(options => { });
 
     app.MapHealthChecks("/health",
-        new HealthCheckOptions()
+        new HealthCheckOptions
         {
             ResultStatusCodes =
             {
@@ -72,7 +70,7 @@ try
             AllowCachingResponses = false,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
-    
+
     app.MapControllers();
 
     app.Run();

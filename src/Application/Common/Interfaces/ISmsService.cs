@@ -1,13 +1,15 @@
-﻿using HelloDoctorApi.Application.Common.Models;
+﻿using Ardalis.Result;
+using HelloDoctorApi.Application.Common.Models;
 using HelloDoctorApi.Domain.Shared;
 
 namespace HelloDoctorApi.Application.Common.Interfaces
 {
-    public interface ISmsService 
+    public interface ISmsService
     {
-        public Task<Result<CustomResponse>> SendSmsOtpAsync(string userId, string phoneNumber, CancellationToken cancellationToken = default);
+        public Task<Result<bool>> SendSmsOtpAsync(string userId, string phoneNumber,
+            CancellationToken cancellationToken = default);
 
-        public Task<bool> ConfirmVerification(string userId, string otp,
+        public Task<Result<bool>> ConfirmVerification(string userId, string otp,
             CancellationToken cancellationToken = default);
 
         //Task<ResponseStatusEnum> SendConfirmationSMS(string senderPhone, string message);

@@ -1,9 +1,9 @@
 ﻿using HelloDoctorApi.Application.Common.Interfaces;
 
-namespace HelloDoctorApi.Web.Services
+namespace HelloDoctorApi.Web.Services;
+
+public class DateTimeService : IDateTimeService
 {
-    public class DateTimeService : IDateTimeService
-    {
-        public DateTime Now => DateTime.UtcNow;
-    }
+    public DateTime Now => DateTime.UtcNow;
+    public DateTimeOffset OffsetNow => DateTimeOffset.UtcNow;
 }

@@ -1,18 +1,20 @@
+using Ardalis.Result;
+using Ardalis.Result.AspNetCore;
 using Asp.Versioning;
 using HelloDoctorApi.Application.Beneficiaries.Commands.CreateBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Models;
 using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiaries;
-using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByMainMemberId;
+using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByBenefactorId;
 using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.DeleteBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.UpdateBeneficiary;
-using HelloDoctorApi.Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
+[TranslateResultToActionResult]
 public class BeneficiaryController : ApiController
 {
     public BeneficiaryController(ISender sender)
@@ -21,7 +23,7 @@ public class BeneficiaryController : ApiController
     }
 
     /// <summary>
-    /// Creates a new beneficiary
+    ///     Creates a new beneficiary
     /// </summary>
     /// <param name="request">the deatils for the beneficiary</param>
     /// <param name="cancellationToken"></param>
@@ -29,56 +31,58 @@ public class BeneficiaryController : ApiController
     [HttpPost("create")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateBeneficiary(
+    public async Task<Result<long>> CreateBeneficiary(
         [FromBody] CreateBeneficiaryRequest request,
         CancellationToken cancellationToken = default)
     {
-        Result<long> response = await Sender.Send(new CreateBeneficiaryCommand(request), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new CreateBeneficiaryCommand(request), cancellationToken);
+        return response;
     }
 
     /// <summary>
-    /// Get all beneficiary
+    ///     Get all beneficiary
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>list of beneficiary</returns>
     [HttpGet("get-all-beneficiaries")]
-    public async Task<IActionResult> GetAllBeneficiaries(CancellationToken cancellationToken = default)
+    public async Task<Result<List<BeneficiaryResponse>>> GetAllBeneficiaries(
+        CancellationToken cancellationToken = default)
     {
-        Result<List<BeneficiaryResponse>>
+        var
             response = await Sender.Send(new GetBeneficiariesCommand(), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return response;
     }
 
     /// <summary>
-    /// Get all beneficiaries for member
+    ///     Get all beneficiaries for member
     /// </summary>
     /// <param name="id">main member identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>list of beneficiary</returns>
     [HttpGet("get-all-member-beneficiaries/{id}")]
-    public async Task<IActionResult> GetAllMemberBeneficiaries(string id, CancellationToken cancellationToken)
+    public async Task<Result<List<BeneficiaryResponse>>> GetAllMemberBeneficiaries(string id,
+        CancellationToken cancellationToken)
     {
-        Result<List<BeneficiaryResponse>>
+        var
             response = await Sender.Send(new GetBeneficiariesByMainMemberIdCommand(id), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return response;
     }
 
     /// <summary>
-    /// Get beneficiary by id
+    ///     Get beneficiary by id
     /// </summary>
     /// <param name="id">beneficiary identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>beneficiary details</returns>
     [HttpGet("get-beneficiary/{id}")]
-    public async Task<IActionResult> GetBeneficiaryById(long id, CancellationToken cancellationToken)
+    public async Task<Result<BeneficiaryResponse>> GetBeneficiaryById(long id, CancellationToken cancellationToken)
     {
-        Result<BeneficiaryResponse> response = await Sender.Send(new GetBeneficiaryCommand(id), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new GetBeneficiaryCommand(id), cancellationToken);
+        return response;
     }
 
     /// <summary>
-    /// Update beneficiary
+    ///     Update beneficiary
     /// </summary>
     /// <param name="request">the details for the beneficiary</param>
     /// <param name="cancellationToken"></param>
@@ -86,7 +90,7 @@ public class BeneficiaryController : ApiController
     [HttpPut("update-beneficiary")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> UpdateBeneficiary(
+    public async Task<Result<BeneficiaryResponse>> UpdateBeneficiary(
         [FromBody] UpdateBeneficiaryRequest request,
         CancellationToken cancellationToken)
     {
@@ -97,14 +101,14 @@ public class BeneficiaryController : ApiController
                 request.PhoneNumber,
                 request.EmailAddress);
 
-        Result<BeneficiaryResponse> response =
+        var response =
             await Sender.Send(command, cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        return response;
     }
 
     //delete beneficiary
     /// <summary>
-    /// Delete beneficiary
+    ///     Delete beneficiary
     /// </summary>
     /// <param name="id">beneficiary identifier</param>
     /// <param name="cancellationToken"></param>
@@ -112,9 +116,9 @@ public class BeneficiaryController : ApiController
     [HttpPut("delete-beneficiary/{id}")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteBeneficiary(long id, CancellationToken cancellationToken)
+    public async Task<Result<bool>> DeleteBeneficiary(long id, CancellationToken cancellationToken)
     {
-        Result<bool> response = await Sender.Send(new DeleteBeneficiaryCommand(id), cancellationToken);
-        return response.IsSuccess ? Ok(response.Value) : NotFound(response.Error);
+        var response = await Sender.Send(new DeleteBeneficiaryCommand(id), cancellationToken);
+        return response;
     }
 }

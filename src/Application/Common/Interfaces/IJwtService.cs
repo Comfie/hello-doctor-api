@@ -10,5 +10,7 @@ public interface IJwtService
     SigningCredentials GetSigningCredentials();
     Task<List<Claim>> GetClaims(ApplicationUser user);
     JwtSecurityToken GenerateTokenOptions(SigningCredentials signingCredentials, List<Claim> claims);
+    Task<string> GenerateAccessToken(IEnumerable<Claim> claims);
     string GenerateRefreshToken(ApplicationUser user);
+    ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
 }
