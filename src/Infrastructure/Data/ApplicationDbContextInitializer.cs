@@ -26,10 +26,10 @@ public class ApplicationDbContextInitializer
     private readonly ILogger<ApplicationDbContextInitializer> _logger;
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
     public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger,
-        ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
     {
         _logger = logger;
         _context = context;
@@ -124,9 +124,10 @@ public class ApplicationDbContextInitializer
                 var roleExists = await _roleManager.RoleExistsAsync(role);
                 if (!roleExists)
                 {
-                    await _roleManager.CreateAsync(new IdentityRole(role));
+                    await _roleManager.CreateAsync(new ApplicationRole { Name = role }); 
                     _logger.LogInformation("Role {Role} created", role);
                     continue;
+
                 }
 
                 _logger.LogInformation("Role {Role} exists", role);

@@ -1,5 +1,7 @@
-﻿using HelloDoctorApi.Domain.Common;
+﻿using System.Linq.Expressions;
+using HelloDoctorApi.Domain.Common;
 using HelloDoctorApi.Infrastructure.Data.Interceptors.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloDoctorApi.Infrastructure.Data.Interceptors;
 
@@ -58,4 +60,33 @@ public static class SoftDeletionExtensions
             .DeletedOnly()
             .Where(entity => entity.DeletedAt <= time);
     }
+    
+    public static void ApplySoftDeleteQueryFilter(this ModelBuilder modelBuilder)
+    {
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+            {
+                var parameter = Expression.Parameter(entityType.ClrType, "e");
+                var property = Expression.Property(parameter, nameof(ISoftDelete.IsDeleted));
+                var falseConstant = Expression.Constant(false);
+                var lambdaExpression = Expression.Lambda(Expression.Equal(property, falseConstant), parameter);
+
+                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambdaExpression);
+            }
+        }
+    }
+
+    // Extension method to include soft-deleted entities when needed
+    public static IQueryable<T> IncludeSoftDeleted<T>(this IQueryable<T> query) where T : class, ISoftDelete
+    {
+        return query.IgnoreQueryFilters();
+    }
+
+    // Extension method to explicitly exclude soft-deleted entities
+    public static IQueryable<T> ExcludeSoftDeleted<T>(this IQueryable<T> query) where T : class, ISoftDelete
+    {
+        return query.Where(e => !e.IsDeleted);
+    }
+
 }

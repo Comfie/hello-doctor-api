@@ -2,7 +2,7 @@
 
 namespace HelloDoctorApi.Domain.Entities.Auth;
 
-public class ApplicationUser : IdentityUser
+public class ApplicationUser : IdentityUser, ISoftDelete
 {
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
@@ -15,4 +15,6 @@ public class ApplicationUser : IdentityUser
     public MainMember? MainMember { get; set; }
     public Pharmacist? Pharmacist { get; set; }
     public Doctor? Doctor { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

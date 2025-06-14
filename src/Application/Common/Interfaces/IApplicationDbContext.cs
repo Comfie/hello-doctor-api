@@ -6,6 +6,7 @@ namespace HelloDoctorApi.Application.Common.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<ApplicationUser> ApplicationUsers { get; }
+    DbSet<ApplicationRole> ApplicationRoles { get; }
     DbSet<SuperAdministrator> SuperAdministrators { get; }
     DbSet<SystemAdministrator> SystemAdministrators { get; }
     DbSet<OneTimePin> OneTimePins { get; }

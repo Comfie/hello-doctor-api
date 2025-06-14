@@ -3,13 +3,10 @@ using Ardalis.Result.AspNetCore;
 using Asp.Versioning;
 using HelloDoctorApi.Application.Authentications.Commands.AuthenticateUser;
 using HelloDoctorApi.Application.Authentications.Commands.CreateUserCommand;
-using HelloDoctorApi.Application.Authentications.Commands.GetAllUsers;
 using HelloDoctorApi.Application.Authentications.Commands.GetUserById;
 using HelloDoctorApi.Application.Authentications.Commands.RefreshToken;
 using HelloDoctorApi.Application.Authentications.Models;
-using HelloDoctorApi.Application.Authentications.Queries.GetUserRoles;
 using HelloDoctorApi.Application.Authentications.Updates.UpdateUser;
-using HelloDoctorApi.Application.Authentications.Updates.UpdateUserRole;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloDoctorApi.Web.Controllers;
@@ -66,18 +63,7 @@ public class AuthenticationController : ApiController
         return response;
     }
 
-    /// <summary>
-    ///     Get all users
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    [HttpGet("get-all-users")]
-    public async Task<Result<List<UserDetailsResponse>>> GetAllUsers(CancellationToken cancellationToken = default)
-    {
-        var
-            response = await Sender.Send(new GetAllUsersCommand(), cancellationToken);
-        return response;
-    }
+    
 
     /// <summary>
     ///     Get user by id
@@ -104,28 +90,5 @@ public class AuthenticationController : ApiController
         var response = await Sender.Send(command);
         return response;
     }
-
-    /// <summary>
-    ///     Get user roles
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    [HttpGet("get-user-roles")]
-    public async Task<Result<List<string?>>> GetUserRoles(CancellationToken cancellationToken = default)
-    {
-        var response = await Sender.Send(new GetUserRolesCommand(), cancellationToken);
-        return response;
-    }
-
-    /// <summary>
-    ///     Update user role
-    /// </summary>
-    /// <param name="command"></param>
-    /// <returns></returns>
-    [HttpPut("update-user-role")]
-    public async Task<Result<bool>> UpdateUserRole([FromBody] UpdateUserRoleCommand command)
-    {
-        var response = await Sender.Send(command);
-        return response;
-    }
+    
 }

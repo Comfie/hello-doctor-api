@@ -1,5 +1,4 @@
 using Ardalis.Result;
-using HelloDoctorApi.Domain.Shared;
 
 namespace HelloDoctorApi.Application.Authentications.Updates.UpdateUserRole;
 

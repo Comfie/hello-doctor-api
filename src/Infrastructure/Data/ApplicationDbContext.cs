@@ -1,7 +1,11 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Common;
 using HelloDoctorApi.Domain.Entities;
 using HelloDoctorApi.Domain.Entities.Auth;
+using HelloDoctorApi.Infrastructure.Data.Interceptors;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +18,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     }
 
     public DbSet<ApplicationUser> ApplicationUsers => Set<ApplicationUser>();
+    public DbSet<ApplicationRole> ApplicationRoles => Set<ApplicationRole>();
     public DbSet<SuperAdministrator> SuperAdministrators => Set<SuperAdministrator>();
     public DbSet<SystemAdministrator> SystemAdministrators => Set<SystemAdministrator>();
     public DbSet<OneTimePin> OneTimePins => Set<OneTimePin>();
@@ -31,5 +36,25 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        
+        // Apply soft delete filter to other entities / remove for now
+        // foreach (var entityType in builder.Model.GetEntityTypes())
+        // {
+        //     // Skip IdentityRole and its derived types when applying the filter
+        //     if (typeof(IdentityRole).IsAssignableFrom(entityType.ClrType))
+        //         continue;
+        //
+        //     if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+        //     {
+        //         var parameter = Expression.Parameter(entityType.ClrType, "e");
+        //         var property = Expression.PropertyOrField(parameter, nameof(ISoftDelete.IsDeleted));
+        //         var falseConstant = Expression.Constant(false);
+        //         var lambdaExpression = Expression.Lambda(Expression.Equal(property, falseConstant), parameter);
+        //
+        //         builder.Entity(entityType.ClrType).HasQueryFilter(lambdaExpression);
+        //     }
+        // }
+
+
     }
 }

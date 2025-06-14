@@ -1,6 +1,5 @@
 using Ardalis.Result;
-using HelloDoctorApi.Domain.Shared;
 
 namespace HelloDoctorApi.Application.Authentications.Queries.GetUserRoles;
 
-public record GetUserRolesCommand() : IRequest<Result<List<string?>>>;
+public sealed record GetUserRolesCommand(string UserId) : IRequest<Result<List<string>>>;

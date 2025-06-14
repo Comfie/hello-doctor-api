@@ -66,8 +66,8 @@ public static class DependencyInjection
         services.AddAuthorizationBuilder();
 
         services
-            .AddIdentity<ApplicationUser, IdentityRole>()
-            .AddRoles<IdentityRole>()
+            .AddIdentity<ApplicationUser, ApplicationRole>()
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 

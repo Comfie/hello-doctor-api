@@ -13,7 +13,6 @@ public interface IIdentityService
 
     Task<Result<UserDetailsResponse>> GetUserById(string userId, CancellationToken cancellationToken = default);
     Task<Result<List<UserDetailsResponse>>> GetUsers(CancellationToken cancellationToken = default);
-    Task<Result<List<string?>>> GetRolesAsync(CancellationToken cancellationToken = default);
     Task<Result<List<UserDetailsResponse>>> GetActiveUsers(CancellationToken cancellationToken = default);
 
     Task<Result<UserDetailsResponse>> UpdateUserAsync(string userId, UpdateUserRequest updateUserRequest,
@@ -26,11 +25,17 @@ public interface IIdentityService
     Task<Result<bool>> ConfirmVerification(string userId, string otp, CancellationToken cancellationToken = default);
     Task<Result<bool>> IsInRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
     Task<Result<bool>> RevokeRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
     Task<Result<bool>> AuthorizeAsync(string userId, string policyName, CancellationToken cancellationToken = default);
-
     Task<Result<bool>> CreateUserAsync(CreateUserRequest createUserRequest,
         CancellationToken cancellationToken = default);
 
     Task<Result<string>> DeleteUserAsync(string userId, CancellationToken cancellationToken = default);
+    
+    //Roles
+    Task<Result<List<UserRoleResponse>>> GetRolesAsync(CancellationToken cancellationToken = default);
+    Task<Result<List<string>>> GetUserRolesAsync(string userId, CancellationToken cancellationToken = default);
+    Task<Result<bool>> UpdateRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
+    Task<Result<bool>> CreateRoleAsync(string role, CancellationToken cancellationToken = default); 
+    Task<Result<bool>> DeleteRoleAsync(string role, CancellationToken cancellationToken = default);
+    Task<Result<bool>> UpdateRoleStatusAsync(string role, CancellationToken cancellationToken = default);
 }

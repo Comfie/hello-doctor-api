@@ -29,6 +29,17 @@ try
     builder.Services.AddInfrastructureServices(builder.Configuration);
     builder.Services.AddWebServices(builder.Configuration);
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAngularApp",
+            policy =>
+            {
+                policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            });
+    });
+
     var app = builder.Build();
 
     // Initialise and seed database
@@ -46,15 +57,17 @@ try
                     description.GroupName.ToUpperInvariant());
         });
     }
-
+    
+    app.UseHttpsRedirection();
+    app.UseCors("AllowAngularApp");
+    
+    app.UseAuthentication();
+    app.UseAuthorization();
+    
     app.UseSerilogRequestLogging();
     app.UseHealthChecks("/health");
 
     app.UseStaticFiles();
-    app.UseHttpsRedirection();
-
-    app.UseAuthentication();
-    app.UseAuthorization();
 
     app.UseExceptionHandler(options => { });
 

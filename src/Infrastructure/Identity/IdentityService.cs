@@ -11,6 +11,7 @@ using HelloDoctorApi.Domain.Enums;
 using HelloDoctorApi.Domain.Repositories;
 using HelloDoctorApi.Domain.Shared;
 using HelloDoctorApi.Infrastructure.Data;
+using HelloDoctorApi.Infrastructure.Data.Interceptors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -25,7 +26,7 @@ public class IdentityService : IIdentityService
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
     private readonly IAuthorizationService _authorizationService;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IJwtService _jwtService;
     private readonly IDateTimeService _dateTime;
@@ -39,7 +40,7 @@ public class IdentityService : IIdentityService
         UserManager<ApplicationUser> userManager,
         IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
         IAuthorizationService authorizationService,
-        RoleManager<IdentityRole> roleManager,
+        RoleManager<ApplicationRole> roleManager,
         SignInManager<ApplicationUser> signInManager,
         IJwtService jwtService, IDateTimeService dateTime,
         ApplicationDbContext context,
@@ -88,7 +89,7 @@ public class IdentityService : IIdentityService
             var userRoles = await _userManager.GetRolesAsync(user);
 
             user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = _dateTime.Now.AddDays(7);
+            user.RefreshTokenExpiryTime = _dateTime.OffsetNow.AddDays(7);
 
             var authResponse = new AuthResponse
             {
@@ -127,7 +128,7 @@ public class IdentityService : IIdentityService
             LastName = createUserRequest.Lastname,
             PhoneNumber = createUserRequest.PhoneNumber,
             Email = createUserRequest.Email,
-            CreatedDate = _dateTime.Now,
+            CreatedDate = _dateTime.OffsetNow,
             IsActive = false
         };
 
@@ -230,6 +231,18 @@ public class IdentityService : IIdentityService
         return Result.Success(result);
     }
 
+    public async Task<Result<List<string>>> GetUserRolesAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
+
+        if (user is null)
+            return Result<List<string>>.Error(new Error("Getting User Roles", "User not found"));
+
+        var roles = await _userManager.GetRolesAsync(user); 
+
+        return Result.Success(roles.ToList());
+    }
+
     public async Task<Result<bool>> UpdateRoleAsync(string userId, string role,
         CancellationToken cancellationToken = default)
     {
@@ -282,8 +295,10 @@ public class IdentityService : IIdentityService
 
         if (user is null)
             return Result<String>.NotFound(new Error("Delete User", "User not found"));
-
-        var result = await _userManager.DeleteAsync(user);
+        
+        user.IsDeleted = true;
+        user.DeletedAt = _dateTime.OffsetNow;
+        var result = await _userManager.UpdateAsync(user);
 
         return result.Succeeded
             ? Result.Success<string>("User deleted successfully")
@@ -291,9 +306,74 @@ public class IdentityService : IIdentityService
                 result.Errors.Select(e => e.Description).ToString() ?? "Failed to delete user"));
     }
 
+    public async Task<Result<bool>> CreateRoleAsync(string role, CancellationToken cancellationToken = default)
+    {
+        var result = await _roleManager.CreateAsync(new ApplicationRole { Name = role });
+        return result.Succeeded
+            ? Result.Success<bool>(true)
+            : Result<bool>.Error(new Error("Create Role",
+                result.Errors.Select(e => e.Description).ToString() ?? "Failed to create role"));
+    }
+
+    public async Task<Result<bool>> DeleteRoleAsync(string role, CancellationToken cancellationToken = default)
+    {
+        var roleToDelete = await _roleManager.FindByNameAsync(role);
+        if (roleToDelete == null)
+        {
+            return Result<bool>.Error(new Error("Delete Role", "Role not found"));
+        }
+
+        if (roleToDelete is { } applicationRole)
+        {
+            applicationRole.IsDeleted = true;
+            applicationRole.DeletedAt = _dateTime.OffsetNow;
+
+            var result = await _roleManager.UpdateAsync(applicationRole);
+            return result.Succeeded
+                ? Result.Success(true)
+                : Result<bool>.Error(new Error("Delete Role",
+                    result.Errors.Select(e => e.Description).ToString() ?? "Failed to delete role"));
+        }
+
+        return Result<bool>.Error(new Error("Delete Role", "Invalid role type"));
+    }
+
+    public async Task<Result<bool>> UpdateRoleStatusAsync(string role, CancellationToken cancellationToken = default)
+    {
+        var roleToUpdate = await _roleManager.FindByNameAsync(role);
+        if (roleToUpdate == null)
+        {
+            return Result<bool>.Error(new Error("Update Role", "Role not found"));
+        }
+
+        if (roleToUpdate is ApplicationRole applicationRole)
+        {
+            applicationRole.IsDeleted = false;
+            applicationRole.DeletedAt = null;
+            applicationRole.UpdatedAt = _dateTime.OffsetNow;
+
+            var result = await _roleManager.UpdateAsync(applicationRole);
+            return result.Succeeded
+                ? Result.Success(true)
+                : Result<bool>.Error(new Error("Update Role",
+                    result.Errors.Select(e => e.Description).ToString() ?? "Failed to update role"));   
+        }
+
+        return Result<bool>.Error(new Error("Update Role", "Invalid role type"));
+    }
+
     public async Task<Result<string>> DeleteUserAsync(ApplicationUser user)
     {
-        var result = await _userManager.DeleteAsync(user);
+      //soft delete
+      var userDetails = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == user.Id);
+
+        if (userDetails is null)
+            return Result<String>.NotFound(new Error("Delete User", "User not found"));
+
+        userDetails.IsDeleted = true;
+        userDetails.DeletedAt = DateTimeOffset.UtcNow;
+
+        var result = await _userManager.UpdateAsync(userDetails);
 
         return result.Succeeded
             ? Result.Success<string>("User deleted successfully")
@@ -359,7 +439,7 @@ public class IdentityService : IIdentityService
     public async Task<Result<List<UserDetailsResponse>>> GetUsers(CancellationToken cancellationToken = default)
     {
         // Fetch users and their roles in a single query using a join
-        var userRoles = await (from user in _context.ApplicationUsers
+        var userRoles = await (from user in _context.ApplicationUsers.IncludeSoftDeleted()
             join userRole in _context.UserRoles on user.Id equals userRole.UserId
             join role in _context.Roles on userRole.RoleId equals role.Id
             select new
@@ -391,11 +471,18 @@ public class IdentityService : IIdentityService
         return Result.Success(groupedUsers);
     }
 
-    public async Task<Result<List<string?>>> GetRolesAsync(CancellationToken cancellationToken = default)
+    public async Task<Result<List<UserRoleResponse>>> GetRolesAsync(CancellationToken cancellationToken = default)
     {
         var roles = await _context
-            .Roles
-            .Select(roles => roles.Name)
+            .ApplicationRoles
+            .Where(r => !r.IsDeleted)
+            .Select(roles => new UserRoleResponse
+            {
+                Id = roles.Id,
+                IsDeleted = roles.IsDeleted,
+                Description = roles.Description,
+                RoleName = roles.Name ?? string.Empty
+            })
             .ToListAsync(cancellationToken);
 
         return Result.Success(roles);

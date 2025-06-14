@@ -37,14 +37,19 @@ public class JwtService : IJwtService
     {
         var claims = new List<Claim>
         {
+            // Keep the original claims for compatibility
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
+            // Add simple claims
+            new Claim("userId", user.Id),
+            new Claim("email", user.UserName ?? string.Empty),
         };
 
         var roles = await _userManager.GetRolesAsync(user);
         foreach (var role in roles)
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            claims.Add(new Claim(ClaimTypes.Role, role)); // Keep original
+            claims.Add(new Claim("role", role)); // Add simple claim
         }
 
         return claims;
