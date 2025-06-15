@@ -79,6 +79,9 @@ public class IdentityService : IIdentityService
             var user = await _userManager.FindByNameAsync(username);
             if (user is null)
                 return Result<AuthResponse>.NotFound(new Error("Getting User", "User not found"));
+            
+            if (!user.IsActive)
+                return Result<AuthResponse>.Error(new Error("Getting User", "Account is not active"));
 
             var refreshToken = _jwtService.GenerateRefreshToken(user);
 
@@ -87,6 +90,10 @@ public class IdentityService : IIdentityService
             var tokenOptions = _jwtService.GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             var userRoles = await _userManager.GetRolesAsync(user);
+            
+            var role = await _roleManager.FindByNameAsync(userRoles.FirstOrDefault() ?? string.Empty);
+            if (role is null || role.IsDeleted)
+                return Result<AuthResponse>.Error(new Error("Authenticate User", "Account has been deactivated, please contact admin"));
 
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = _dateTime.OffsetNow.AddDays(7);
@@ -397,7 +404,8 @@ public class IdentityService : IIdentityService
             Email = account.Email,
             FirstName = account.FirstName,
             LastName = account.LastName,
-            PhoneNumber = account.PhoneNumber
+            PhoneNumber = account.PhoneNumber,
+            IsActive = account.IsActive
         };
 
         var userRoles = await _userManager.GetRolesAsync(account);
@@ -450,12 +458,13 @@ public class IdentityService : IIdentityService
                 user.FirstName,
                 user.LastName,
                 user.PhoneNumber,
+                user.IsActive,
                 RoleName = role.Name
             }).ToListAsync(cancellationToken);
 
         // Group the results by user and aggregate roles
         var groupedUsers = userRoles
-            .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber })
+            .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive })
             .Select(g => new UserDetailsResponse
             {
                 Email = g.Key.Email,
@@ -463,6 +472,7 @@ public class IdentityService : IIdentityService
                 Username = g.Key.UserName,
                 FirstName = g.Key.FirstName,
                 LastName = g.Key.LastName,
+                IsActive = g.Key.IsActive,
                 Role = string.Join(",", g.Select(u => u.RoleName)),
                 PhoneNumber = g.Key.PhoneNumber
             }).ToList();
@@ -476,12 +486,13 @@ public class IdentityService : IIdentityService
         var roles = await _context
             .ApplicationRoles
             .Where(r => !r.IsDeleted)
-            .Select(roles => new UserRoleResponse
+            .Select(role => new UserRoleResponse
             {
-                Id = roles.Id,
-                IsDeleted = roles.IsDeleted,
-                Description = roles.Description,
-                RoleName = roles.Name ?? string.Empty
+                Id = role.Id,
+                NumberOfUsers = _context.UserRoles.Count(ur => ur.RoleId == role.Id),
+                IsDeleted = role.IsDeleted,
+                Description = role.Description,
+                RoleName = role.Name ?? string.Empty
             })
             .ToListAsync(cancellationToken);
 
@@ -503,12 +514,13 @@ public class IdentityService : IIdentityService
                 user.FirstName,
                 user.LastName,
                 user.PhoneNumber,
+                user.IsActive,
                 RoleName = role.Name
             }).ToListAsync(cancellationToken);
 
         // Group the results by user and aggregate roles
         var groupedUsers = userRoles
-            .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber })
+            .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive })
             .Select(g => new UserDetailsResponse
             {
                 Email = g.Key.Email,
@@ -516,6 +528,7 @@ public class IdentityService : IIdentityService
                 Username = g.Key.UserName,
                 FirstName = g.Key.FirstName,
                 LastName = g.Key.LastName,
+                IsActive = g.Key.IsActive,
                 Role = string.Join(",", g.Select(u => u.RoleName)),
                 PhoneNumber = g.Key.PhoneNumber
             }).ToList();

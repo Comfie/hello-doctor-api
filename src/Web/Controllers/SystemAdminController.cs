@@ -4,6 +4,7 @@ using Asp.Versioning;
 using HelloDoctorApi.Application.Authentications.Commands.CreateRole;
 using HelloDoctorApi.Application.Authentications.Commands.GetAllUsers;
 using HelloDoctorApi.Application.Authentications.Models;
+using HelloDoctorApi.Application.Authentications.Queries.GetRoles;
 using HelloDoctorApi.Application.Authentications.Queries.GetUserRoles;
 using HelloDoctorApi.Application.Authentications.Updates.ChangeRoleStatus;
 using HelloDoctorApi.Application.Authentications.Updates.RevokeUserRole;
