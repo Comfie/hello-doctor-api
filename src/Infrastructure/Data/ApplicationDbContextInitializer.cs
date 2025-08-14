@@ -95,6 +95,7 @@ public class ApplicationDbContextInitializer
         {
             await SetupRoles();
             await SeedFirstSuperAdmin();
+            await SeedFirstMainMember();
         }
         catch (Exception ex)
         {
@@ -164,6 +165,41 @@ public class ApplicationDbContextInitializer
         if (_userManager.Users.All(u => u.UserName != administrator.UserName))
         {
             var administratorRole = new IdentityRole("SuperAdministrator");
+
+            await _userManager.CreateAsync(administrator, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", administrator.Email);
+            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            {
+                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+            }
+        }
+    }
+    
+    public async Task SeedFirstMainMember()
+    {
+        var user = await _userManager.FindByEmailAsync("member@gmail.com");
+
+        if (user is not null)
+        {
+            _logger.LogInformation("ApplicationUser {ApplicationUser} already exists", user.Email);
+            return;
+        }
+
+        // Default users
+        var administrator = new ApplicationUser
+        {
+            UserName = "member@gmail.com",
+            Email = "member@gmail.com",
+            EmailConfirmed = true,
+            FirstName = "Main",
+            LastName = "Member",
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow
+        };
+
+        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        {
+            var administratorRole = new IdentityRole("MainMember");
 
             await _userManager.CreateAsync(administrator, "Admin@123");
             _logger.LogInformation("ApplicationUser {ApplicationUser} created", administrator.Email);

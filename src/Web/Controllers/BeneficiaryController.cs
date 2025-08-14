@@ -8,12 +8,15 @@ using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByBenefac
 using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.DeleteBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.UpdateBeneficiary;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
+[Authorize(Roles = "MainMember")]
+
 [TranslateResultToActionResult]
 public class BeneficiaryController : ApiController
 {

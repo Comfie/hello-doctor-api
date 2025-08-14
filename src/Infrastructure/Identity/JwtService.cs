@@ -8,6 +8,8 @@ using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using HelloDoctorApi.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelloDoctorApi.Infrastructure.Identity;
 
@@ -16,13 +18,15 @@ public class JwtService : IJwtService
     private readonly IDateTimeService _dateTime;
     private readonly AppSettings _appSettings;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ApplicationDbContext _db;
 
     public JwtService(IDateTimeService dateTime, IOptions<AppSettings> appSettings,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager, ApplicationDbContext db)
     {
         _dateTime = dateTime;
         _appSettings = appSettings.Value;
         _userManager = userManager;
+        _db = db;
     }
 
     public SigningCredentials GetSigningCredentials()
@@ -50,6 +54,20 @@ public class JwtService : IJwtService
         {
             claims.Add(new Claim(ClaimTypes.Role, role)); // Keep original
             claims.Add(new Claim("role", role)); // Add simple claim
+        }
+
+        // add pharmacy context for pharmacists
+        var pharmacist = await _db.Pharmacists.AsNoTracking().FirstOrDefaultAsync(p => p.AccountId == user.Id);
+        if (pharmacist is not null)
+        {
+            claims.Add(new Claim("pharmacyId", pharmacist.PharmacyId.ToString()));
+        }
+
+        // add main member context for members
+        var mainMember = await _db.MainMembers.AsNoTracking().FirstOrDefaultAsync(m => m.AccountId == user.Id);
+        if (mainMember is not null)
+        {
+            claims.Add(new Claim("mainMemberId", mainMember.Id.ToString()));
         }
 
         return claims;

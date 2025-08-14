@@ -31,30 +31,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<PrescriptionNote> PrescriptionNotes => Set<PrescriptionNote>();
     public DbSet<PrescriptionStatusHistory> PrescriptionStatusHistories => Set<PrescriptionStatusHistory>();
     public DbSet<FileUpload> FileUploads => Set<FileUpload>();
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        
-        // Apply soft delete filter to other entities / remove for now
-        // foreach (var entityType in builder.Model.GetEntityTypes())
-        // {
-        //     // Skip IdentityRole and its derived types when applying the filter
-        //     if (typeof(IdentityRole).IsAssignableFrom(entityType.ClrType))
-        //         continue;
-        //
-        //     if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
-        //     {
-        //         var parameter = Expression.Parameter(entityType.ClrType, "e");
-        //         var property = Expression.PropertyOrField(parameter, nameof(ISoftDelete.IsDeleted));
-        //         var falseConstant = Expression.Constant(false);
-        //         var lambdaExpression = Expression.Lambda(Expression.Equal(property, falseConstant), parameter);
-        //
-        //         builder.Entity(entityType.ClrType).HasQueryFilter(lambdaExpression);
-        //     }
-        // }
 
-
+   
     }
 }

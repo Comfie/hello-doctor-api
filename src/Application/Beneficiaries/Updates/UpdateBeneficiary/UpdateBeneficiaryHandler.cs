@@ -1,6 +1,7 @@
 using Ardalis.Result;
 using HelloDoctorApi.Application.Beneficiaries.Models;
 using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Domain.Entities;
 using HelloDoctorApi.Domain.Repositories;
 using HelloDoctorApi.Domain.Shared;
 
@@ -10,12 +11,14 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IUser _user;
 
     public UpdateBeneficiaryHandler(IApplicationDbContext context,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork, IUser user)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _user = user;
     }
 
     public async Task<Result<BeneficiaryResponse>> Handle(UpdateBeneficiaryCommand request,
@@ -32,12 +35,25 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
             return Result<BeneficiaryResponse>.NotFound(new Error("Beneficiary", "Beneficiary not found"));
         }
 
+        if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id)
+        {
+            return Result<BeneficiaryResponse>.Forbidden();
+        }
+
         beneficiary.FirstName = request.FirstName ?? beneficiary.FirstName;
         beneficiary.LastName = request.LastName ?? beneficiary.LastName;
         beneficiary.PhoneNumber = request.PhoneNumber ?? beneficiary.PhoneNumber;
         beneficiary.EmailAddress = request.EmailAddress ?? beneficiary.EmailAddress;
         _context.Beneficiaries.Update(beneficiary);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _context.AuditLogs.Add(new AuditLog
+        {
+            Action = "BeneficiaryUpdated",
+            ActorUserId = _user.Id,
+            Details = $"BeneficiaryId={beneficiary.Id}"
+        });
+        await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Success(new BeneficiaryResponse(
             beneficiary.Id,

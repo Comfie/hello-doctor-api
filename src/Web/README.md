@@ -52,6 +52,15 @@ The solution contains unit, integration, and functional tests.
 To run the tests:
 ```bash
 dotnet test
+Useful variants
+Specific project:
+Domain tests: dotnet test tests/HelloDoctorApi.Domain.Tests/HelloDoctorApi.Domain.Tests.csproj -c Debug
+Application tests: dotnet test tests/HelloDoctorApi.Application.Tests/HelloDoctorApi.Application.Tests.csproj -c Debug
+Filter by class or test name:
+dotnet test --filter "FullyQualifiedName~BeneficiaryAuthorizationAndAuditTests"
+dotnet test --filter "TestName~CreateBeneficiary"
+With coverage (collector already included):
+dotnet test --collect:"XPlat Code Coverage"
 ```
 
 ## Help

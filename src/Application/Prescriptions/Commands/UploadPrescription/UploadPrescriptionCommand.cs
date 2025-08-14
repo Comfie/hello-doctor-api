@@ -1,5 +1,6 @@
+using Ardalis.Result;
+
 namespace HelloDoctorApi.Application.Prescriptions.Commands.UploadPrescription;
 
-public record UploadPrescriptionCommand : IRequest<bool>
-{
-}
+public record UploadPrescriptionCommand(long BeneficiaryId, long? PharmacyId = null, string? Notes = null)
+    : IRequest<Result<long>>;

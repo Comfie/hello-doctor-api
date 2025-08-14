@@ -37,6 +37,47 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.ToTable("DoctorPharmacy");
                 });
 
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.AuditLog", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ActorUserId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("PharmacyId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PrescriptionId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogs");
+                });
+
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -462,6 +503,9 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<long?>("DefaultPharmacyId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
@@ -593,6 +637,9 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("AssignedPharmacyId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("BeneficiaryId")
                         .HasColumnType("bigint");
 
@@ -626,6 +673,8 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedPharmacyId");
 
                     b.HasIndex("BeneficiaryId")
                         .IsUnique();
@@ -998,6 +1047,10 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Prescription", b =>
                 {
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Pharmacy", "AssignedPharmacy")
+                        .WithMany()
+                        .HasForeignKey("AssignedPharmacyId");
+
                     b.HasOne("HelloDoctorApi.Domain.Entities.Beneficiary", "Beneficiary")
                         .WithOne()
                         .HasForeignKey("HelloDoctorApi.Domain.Entities.Prescription", "BeneficiaryId")
@@ -1009,6 +1062,8 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .HasForeignKey("HelloDoctorApi.Domain.Entities.Prescription", "MainMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AssignedPharmacy");
 
                     b.Navigation("Beneficiary");
 

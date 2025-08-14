@@ -15,8 +15,4 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Events\"/>
-    </ItemGroup>
-
 </Project>

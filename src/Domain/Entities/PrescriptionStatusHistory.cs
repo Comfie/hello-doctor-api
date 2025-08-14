@@ -12,5 +12,5 @@ public class PrescriptionStatusHistory
     public DateTimeOffset ChangedDate { get; set; }
     public required string Reason { get; set; }
     public required Prescription Prescription { get; set; }
-    public required ApplicationUser ChangedByUser { get; set; }
+    public ApplicationUser? ChangedByUser { get; set; }
 }

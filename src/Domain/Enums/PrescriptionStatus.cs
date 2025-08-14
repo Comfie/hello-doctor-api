@@ -12,5 +12,6 @@ public enum PrescriptionStatus
     Expired = 7, // Prescription has expired
     Cancelled = 8, // Cancelled by doctor/patient
     PaymentPending = 9, // Waiting for payment
-    ReadyForPickup = 10 // Prepared and ready for collection
+    ReadyForPickup = 10, // Prepared and ready for collection
+    Delivered = 11 // Delivered to member/beneficiary
 }
