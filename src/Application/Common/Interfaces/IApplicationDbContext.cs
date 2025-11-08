@@ -22,5 +22,6 @@ public interface IApplicationDbContext
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<Notification> Notifications { get; }
     DbSet<NotificationPreference> NotificationPreferences { get; }
+    DbSet<Payment> Payments { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
