@@ -27,7 +27,8 @@ public class ListAllPrescriptionsHandler : IRequestHandler<ListAllPrescriptionsQ
         // Check if user is SuperAdministrator (can see all prescriptions)
         var isSuperAdmin = await _identityService.IsInRoleAsync(_user.Id!, "SuperAdministrator", ct);
 
-        var query = _db.Prescriptions
+        // Explicitly use IQueryable to allow query modification
+        IQueryable<Domain.Entities.Prescription> query = _db.Prescriptions
             .AsNoTracking()
             .Include(x => x.Beneficiary)
             .Include(x => x.MainMember);
