@@ -36,7 +36,11 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
             return Result<BeneficiaryResponse>.NotFound(new Error("Beneficiary", "Beneficiary not found"));
         }
 
-        if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id)
+        // Get MainMemberId from JWT claims (returns long?)
+        var userMainMemberId = _user.GetMainMemberId();
+
+        // Validate ownership: beneficiary must belong to the requesting MainMember
+        if (!userMainMemberId.HasValue || beneficiary.MainMemberId != userMainMemberId.Value)
         {
             return Result<BeneficiaryResponse>.Forbidden();
         }

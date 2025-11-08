@@ -8,19 +8,45 @@ public class GetPharmacyPrescriptionsQueryHandler : IRequestHandler<GetPharmacyP
 {
     private readonly IApplicationDbContext _db;
     private readonly IUser _user;
+    private readonly IIdentityService _identityService;
 
-    public GetPharmacyPrescriptionsQueryHandler(IApplicationDbContext db, IUser user)
-    { _db = db; _user = user; }
+    public GetPharmacyPrescriptionsQueryHandler(IApplicationDbContext db, IUser user, IIdentityService identityService)
+    {
+        _db = db;
+        _user = user;
+        _identityService = identityService;
+    }
 
     public async Task<Result<List<GetPharmacyPrescriptionsResult>>> Handle(GetPharmacyPrescriptionsQuery request, CancellationToken ct)
     {
+        // Get user's pharmacy context from JWT claims
+        var userPharmacyId = _user.GetPharmacyId();
+
+        // Check if user is SuperAdministrator (can access any pharmacy)
+        var isSuperAdmin = await _identityService.IsInRoleAsync(_user.Id!, "SuperAdministrator", ct);
+
+        // Determine which pharmacyId to use for filtering
         long? pharmacyId = request.PharmacyId;
 
-        // fallback to claim for pharmacists
-        if (pharmacyId is null)
+        // For non-SuperAdministrators, enforce pharmacy scope
+        if (!isSuperAdmin.IsSuccess)
         {
-            // parse from claim stored as string
-            // IUser only exposes Id; so we rely on controller to pass PharmacyId when needed or future IUser extension
+            // If no pharmacyId in request, use user's pharmacy from claims
+            if (pharmacyId is null)
+            {
+                pharmacyId = userPharmacyId;
+            }
+            // If pharmacyId is provided, validate it matches user's pharmacy
+            else if (userPharmacyId.HasValue && pharmacyId != userPharmacyId)
+            {
+                return Result<List<GetPharmacyPrescriptionsResult>>.Forbidden();
+            }
+
+            // If user has no pharmacy context, they cannot access prescriptions
+            if (pharmacyId is null)
+            {
+                return Result<List<GetPharmacyPrescriptionsResult>>.Forbidden();
+            }
         }
 
         var q = _db.Prescriptions

@@ -22,7 +22,15 @@ public class DeleteBeneficiaryCommandHandler : IRequestHandler<DeleteBeneficiary
     {
         var beneficiary = await _context.Beneficiaries.FirstOrDefaultAsync(b => b.Id == request.Id, cancellationToken);
         if (beneficiary is null) return Result<bool>.NotFound();
-        if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id) return Result<bool>.Forbidden();
+
+        // Get MainMemberId from JWT claims (returns long?)
+        var userMainMemberId = _user.GetMainMemberId();
+
+        // Validate ownership: beneficiary must belong to the requesting MainMember
+        if (!userMainMemberId.HasValue || beneficiary.MainMemberId != userMainMemberId.Value)
+        {
+            return Result<bool>.Forbidden();
+        }
 
         beneficiary.IsDeleted = true;
         beneficiary.DeletedAt = DateTimeOffset.UtcNow;
