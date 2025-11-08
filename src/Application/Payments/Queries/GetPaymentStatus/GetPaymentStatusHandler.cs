@@ -28,14 +28,14 @@ public class GetPaymentStatusHandler : IRequestHandler<GetPaymentStatusQuery, Re
             .Where(p => p.Id == request.PaymentId)
             .Where(p => p.PayerId == _user.Id) // Only payer can view their payment
             .Select(p => new PaymentStatusResponse(
-                PaymentId: p.Id,
-                Status: p.Status.ToString(),
-                Amount: p.Amount,
-                Currency: p.Currency,
-                Purpose: p.Purpose.ToString(),
-                ExternalTransactionId: p.ExternalTransactionId,
-                CompletedAt: p.CompletedAt,
-                FailureReason: p.FailureReason
+                p.Id,
+                p.Status.ToString(),
+                p.Amount,
+                p.Currency,
+                p.Purpose.ToString(),
+                p.ExternalTransactionId,
+                p.CompletedAt,
+                p.FailureReason
             ))
             .FirstOrDefaultAsync(cancellationToken);
 

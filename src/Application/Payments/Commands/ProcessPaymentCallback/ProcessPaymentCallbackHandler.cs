@@ -34,7 +34,7 @@ public class ProcessPaymentCallbackHandler : IRequestHandler<ProcessPaymentCallb
 
         if (!callbackResult.IsSuccess)
         {
-            return Result<bool>.Error(callbackResult.Errors.ToArray());
+            return Result<bool>.Error(callbackResult.Errors);
         }
 
         var callbackResponse = callbackResult.Value;
