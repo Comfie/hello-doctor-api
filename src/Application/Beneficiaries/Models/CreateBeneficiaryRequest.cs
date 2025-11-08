@@ -6,4 +6,6 @@ public record CreateBeneficiaryRequest(
     string PhoneNumber,
     string FirstName,
     string EmailAddress,
-    string Relationship);
+    string Relationship,
+    string Gender,
+    DateTime DateOfBirth);

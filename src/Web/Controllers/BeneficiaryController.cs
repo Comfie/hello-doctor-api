@@ -8,6 +8,7 @@ using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiariesByBenefac
 using HelloDoctorApi.Application.Beneficiaries.Queries.GetBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.DeleteBeneficiary;
 using HelloDoctorApi.Application.Beneficiaries.Updates.UpdateBeneficiary;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,9 +16,8 @@ namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
-[Authorize(Roles = "MainMember")]
-
 [TranslateResultToActionResult]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "MainMember")]
 public class BeneficiaryController : ApiController
 {
     public BeneficiaryController(ISender sender)
@@ -102,7 +102,10 @@ public class BeneficiaryController : ApiController
                 request.FirstName,
                 request.LastName,
                 request.PhoneNumber,
-                request.EmailAddress);
+                request.EmailAddress,
+                request.Gender,
+                request.DateOfBirth,
+                request.RelationshipToMainMember);
 
         var response =
             await Sender.Send(command, cancellationToken);
@@ -116,8 +119,9 @@ public class BeneficiaryController : ApiController
     /// <param name="id">beneficiary identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>custom response with message</returns>
-    [HttpPut("delete-beneficiary/{id}")]
-    [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
+    [HttpDelete("{id}")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<Result<bool>> DeleteBeneficiary(long id, CancellationToken cancellationToken)
     {

@@ -50,19 +50,22 @@ public class DocumentService : IDocumentService
             return Result<long>.Error(e.Message);
         }
 
+        // Reset stream position for checksum calculation
+        file.Position = 0;
         var checksum = await _checksumService.ChecksumAsHexAsync(file, cancellationToken);
 
-        using var memoryStream = new MemoryStream();
-        await file.CopyToAsync(memoryStream, cancellationToken);
+        // Get file size
+        var fileSize = file.Length;
+
         var fileInfo = new FileUpload
         {
             FileName = fileName,
             Path = path,
             UploadedDate = _dateTime.OffsetNow,
-            Provider = "Local",
+            Provider = _fileStoreService.GetType().Name, // Track actual provider
             FileType = FileType.Prescription,
             Checksum = checksum,
-            FileContent = memoryStream.ToArray(),
+            FileSize = fileSize
         };
         _context.FileUploads.Add(fileInfo);
         await _context.SaveChangesAsync(cancellationToken);
@@ -72,12 +75,22 @@ public class DocumentService : IDocumentService
 
     public async Task<Result<byte[]>> GetPrescriptionFile(long id, CancellationToken cancellationToken = default)
     {
-        var file = await _context.FileUploads.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+        var file = await _context.FileUploads
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted, cancellationToken);
 
         if (file is null)
             return Result<byte[]>.Error(new Error("Get Prescription File", "File not found"));
 
-        return Result<byte[]>.Success(file.FileContent);
+        try
+        {
+            var fileContent = await _fileStoreService.GetFile(file.Path, cancellationToken);
+            return Result<byte[]>.Success(fileContent);
+        }
+        catch (Exception ex)
+        {
+            return Result<byte[]>.Error(new Error("Get Prescription File", $"Failed to retrieve file: {ex.Message}"));
+        }
     }
 
     public async Task<Result<bool>> DeletePrescriptionFile(long id, CancellationToken cancellationToken = default)
@@ -87,9 +100,15 @@ public class DocumentService : IDocumentService
         if (file is null)
             return Result<bool>.Error(new Error("Delete Prescription File", "File not found"));
 
+        // Soft delete in database
         file.IsDeleted = true;
+        file.DeletedAt = _dateTime.OffsetNow;
         _context.FileUploads.Update(file);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Optionally delete from storage asynchronously (background job recommended)
+        // For now, we keep the file in storage for potential recovery
+
         return Result<bool>.Success(true);
     }
 }

@@ -3,12 +3,15 @@ using Ardalis.Result.AspNetCore;
 using Asp.Versioning;
 using HelloDoctorApi.Application.Reporting.Queries.GetPharmacyPrescriptionCounts;
 using HelloDoctorApi.Application.Reporting.Queries.GetRecentPrescriptionActivity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "SuperAdministrator,SystemAdministrator,Pharmacist")]
 [TranslateResultToActionResult]
 public class ReportsController : ApiController
 {

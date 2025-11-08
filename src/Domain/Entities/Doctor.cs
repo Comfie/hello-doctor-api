@@ -1,7 +1,11 @@
+using HelloDoctorApi.Domain.Entities.Auth;
+
 namespace HelloDoctorApi.Domain.Entities;
 
 public class Doctor : BaseAuditableEntity
 {
+    public required string AccountId { get; set; }
+    public required ApplicationUser Account { get; set; }
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
     public required string EmailAddress { get; set; }

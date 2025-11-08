@@ -2,6 +2,7 @@ using Ardalis.Result;
 using HelloDoctorApi.Application.Beneficiaries.Models;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Enums;
 using HelloDoctorApi.Domain.Repositories;
 using HelloDoctorApi.Domain.Shared;
 
@@ -44,6 +45,16 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
         beneficiary.LastName = request.LastName ?? beneficiary.LastName;
         beneficiary.PhoneNumber = request.PhoneNumber ?? beneficiary.PhoneNumber;
         beneficiary.EmailAddress = request.EmailAddress ?? beneficiary.EmailAddress;
+        beneficiary.Gender = request.Gender ?? beneficiary.Gender;
+        beneficiary.DateOfBirth = request.DateOfBirth ?? beneficiary.DateOfBirth;
+        beneficiary.Relationship = request.RelationshipToMainMember switch
+        {
+            "sister" => RelationshipToMainMember.Sister,
+            "brother" => RelationshipToMainMember.Brother,
+            "parent" => RelationshipToMainMember.Parent,
+            "child" => RelationshipToMainMember.Child,
+            _ => RelationshipToMainMember.Other
+        };
         _context.Beneficiaries.Update(beneficiary);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -64,7 +75,10 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
             beneficiary.PhoneNumber,
             beneficiary.EmailAddress,
             beneficiary.MainMemberId,
-            beneficiary.Relationship.ToString()
+            beneficiary.Relationship.ToString(),
+            beneficiary.Gender,
+            beneficiary.DateOfBirth,
+            beneficiary.BeneficiaryCode
         ));
     }
 }

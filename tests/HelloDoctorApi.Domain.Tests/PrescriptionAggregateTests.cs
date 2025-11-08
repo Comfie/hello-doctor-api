@@ -56,7 +56,9 @@ public class PrescriptionAggregateTests
                 EmailAddress = "j@d.com", BeneficiaryCode = "B1",
                 Relationship = RelationshipToMainMember.Child,
                 MainMemberId = "user-1",
-                MainMember = new Domain.Entities.Auth.ApplicationUser { Id = "user-1" }
+                MainMember = new Domain.Entities.Auth.ApplicationUser { Id = "user-1" },
+                Gender = "male",
+                DateOfBirth = DateTime.Now.AddYears(-18)
             }
         };
 }

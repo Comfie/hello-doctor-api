@@ -12,7 +12,7 @@ public interface IIdentityService
         CancellationToken cancellationToken = default);
 
     Task<Result<UserDetailsResponse>> GetUserById(string userId, CancellationToken cancellationToken = default);
-    Task<Result<List<UserDetailsResponse>>> GetUsers(CancellationToken cancellationToken = default);
+    Task<Result<List<UserDetailsResponse>>> GetUsers(long? pharmacyId = null, CancellationToken cancellationToken = default);
     Task<Result<List<UserDetailsResponse>>> GetActiveUsers(CancellationToken cancellationToken = default);
 
     Task<Result<UserDetailsResponse>> UpdateUserAsync(string userId, UpdateUserRequest updateUserRequest,
@@ -33,8 +33,8 @@ public interface IIdentityService
     
     //Roles
     Task<Result<List<UserRoleResponse>>> GetRolesAsync(CancellationToken cancellationToken = default);
-    Task<Result<List<string>>> GetUserRolesAsync(string userId, CancellationToken cancellationToken = default);
-    Task<Result<bool>> UpdateRoleAsync(string userId, string role, CancellationToken cancellationToken = default);
+    Task<Result<List<string>>> GetUserRolesAsync(string userId, long? pharmacyId = null, CancellationToken cancellationToken = default);
+    Task<Result<bool>> UpdateRoleAsync(string userId, string role, long? pharmacyId = null, CancellationToken cancellationToken = default);
     Task<Result<bool>> CreateRoleAsync(string role, CancellationToken cancellationToken = default); 
     Task<Result<bool>> DeleteRoleAsync(string role, CancellationToken cancellationToken = default);
     Task<Result<bool>> UpdateRoleStatusAsync(string role, CancellationToken cancellationToken = default);

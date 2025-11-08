@@ -38,7 +38,9 @@ public class CreateBeneficiaryCommandHandler : IRequestHandler<CreateBeneficiary
             EmailAddress = request.Request.EmailAddress,
             BeneficiaryCode = "To Be Determined",
             MainMemberId = mainMember.Id,
-            MainMember = mainMember
+            MainMember = mainMember,
+            Gender = request.Request.Gender,
+            DateOfBirth = request.Request.DateOfBirth
         };
 
         var relationshipEnum = request.Request.Relationship switch

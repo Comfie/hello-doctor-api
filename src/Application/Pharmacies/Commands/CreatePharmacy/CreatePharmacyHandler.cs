@@ -4,6 +4,7 @@ using HelloDoctorApi.Application.Pharmacies.Models;
 using HelloDoctorApi.Domain.Entities;
 using HelloDoctorApi.Domain.Repositories;
 using HelloDoctorApi.Domain.Shared;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HelloDoctorApi.Application.Pharmacies.Commands.CreatePharmacy;
 
@@ -11,11 +12,13 @@ public class CreatePharmacyHandler : IRequestHandler<CreatePharmacyCommand, Resu
 {
     private readonly IApplicationDbContext _context;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
-    public CreatePharmacyHandler(IApplicationDbContext context, IUnitOfWork unitOfWork)
+    public CreatePharmacyHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _context = context;
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     public async Task<Result<PharmacyResponse>> Handle(CreatePharmacyCommand request,
@@ -36,6 +39,10 @@ public class CreatePharmacyHandler : IRequestHandler<CreatePharmacyCommand, Resu
 
         _context.Pharmacies.Add(pharmacy);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Invalidate pharmacy caches
+        _cache.Remove("AllPharmacies");
+        _cache.Remove("ActivePharmacies");
 
         return Result.Success(new PharmacyResponse
         {

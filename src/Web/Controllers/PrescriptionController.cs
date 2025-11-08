@@ -13,12 +13,14 @@ using HelloDoctorApi.Application.Prescriptions.Models;
 using HelloDoctorApi.Application.Prescriptions.Queries.GetPrescriptionDetails;
 using HelloDoctorApi.Application.Prescriptions.Queries.ListAllPrescriptions;
 using HelloDoctorApi.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HelloDoctorApi.Web.Controllers;
 
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 [TranslateResultToActionResult]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class PrescriptionController : ApiController
 {
     public PrescriptionController(ISender sender) : base(sender)
@@ -77,7 +79,7 @@ public class PrescriptionController : ApiController
     /// <returns></returns>
 
     // Admin/system list all prescriptions (simple paging)
-    [Authorize(Roles = "SystemAdministrator,SuperAdministrator")]
+    [Authorize(Roles = "SystemAdministrator,SuperAdministrator,Pharmacist")]
     [HttpGet]
     public async
         Task<Result<List<ListPrescriptionItem>>>

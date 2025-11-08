@@ -26,6 +26,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Folder Include="AdminDashboard\Commands\" />
+        <Folder Include="AdminDashboard\Updates\" />
         <Folder Include="Beneficiaries\Queries\"/>
         <Folder Include="Beneficiaries\Updates\"/>
         <Folder Include="MainMembers\Commands\"/>

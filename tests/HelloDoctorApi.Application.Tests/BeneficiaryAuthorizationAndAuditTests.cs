@@ -31,6 +31,8 @@ public class BeneficiaryAuthorizationAndAuditTests
         public DbSet<FileUpload> FileUploads => Set<FileUpload>();
         public DbSet<HelloDoctorApi.Domain.Entities.Auth.OneTimePin> OneTimePins => Set<HelloDoctorApi.Domain.Entities.Auth.OneTimePin>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
     }
 
     private class FakeUnitOfWork : HelloDoctorApi.Domain.Repositories.IUnitOfWork
@@ -38,8 +40,21 @@ public class BeneficiaryAuthorizationAndAuditTests
         public Task SaveChangesAsync(CancellationToken cancellationToken = default) => Task.CompletedTask;
     }
 
-    private class FakeUser : IUser { public string? Id { get; set; } = "member-1"; }
-    private class SwitchableUser : IUser { public string? Id { get; set; } }
+    private class FakeUser : IUser
+    {
+        public string? Id { get; set; } = "member-1";
+        public long? GetPharmacyId() => null;
+        public long? GetMainMemberId() => null;
+        public long? GetDoctorId() => null;
+    }
+
+    private class SwitchableUser : IUser
+    {
+        public string? Id { get; set; }
+        public long? GetPharmacyId() => null;
+        public long? GetMainMemberId() => null;
+        public long? GetDoctorId() => null;
+    }
 
     private ServiceProvider BuildServices()
     {
@@ -68,7 +83,9 @@ public class BeneficiaryAuthorizationAndAuditTests
             PhoneNumber: "123",
             FirstName: "John",
             EmailAddress: "j@d.com",
-            Relationship: "child"
+            Relationship: "child",
+            Gender: "male",
+            DateOfBirth: DateTime.Now.AddYears(-18)
         ));
 
         var currentUser = (SwitchableUser)sp.GetRequiredService<IUser>();
@@ -95,7 +112,9 @@ public class BeneficiaryAuthorizationAndAuditTests
             FirstName = "Ben", LastName = "Ef", PhoneNumber = "123",
             EmailAddress = "b@e.com", BeneficiaryCode = "B1",
             Relationship = RelationshipToMainMember.Child,
-            MainMemberId = owner.Id, MainMember = owner
+            MainMemberId = owner.Id, MainMember = owner,
+            Gender = "male",
+            DateOfBirth = DateTime.Now.AddYears(-18)
         });
         await db.SaveChangesAsync();
 
@@ -104,7 +123,8 @@ public class BeneficiaryAuthorizationAndAuditTests
         currentUser.Id = other.Id;
 
         var mediator = sp.GetRequiredService<MediatR.IMediator>();
-        var update = new UpdateBeneficiaryCommand(1, FirstName: "New", LastName: null, PhoneNumber: null, EmailAddress: null);
+        var update = new UpdateBeneficiaryCommand(1, FirstName: "New", LastName: null, PhoneNumber: null, EmailAddress: null,
+            Gender: null, DateOfBirth: null, RelationshipToMainMember: "child");
         var result = await mediator.Send(update);
 
         result.Status.Should().Be(Ardalis.Result.ResultStatus.Forbidden);
@@ -125,7 +145,9 @@ public class BeneficiaryAuthorizationAndAuditTests
             FirstName = "Ben", LastName = "Ef", PhoneNumber = "123",
             EmailAddress = "b@e.com", BeneficiaryCode = "B1",
             Relationship = RelationshipToMainMember.Child,
-            MainMemberId = owner.Id, MainMember = owner
+            MainMemberId = owner.Id, MainMember = owner,
+            Gender = "male",
+            DateOfBirth = DateTime.Now.AddYears(-18)
         });
         await db.SaveChangesAsync();
 

@@ -67,6 +67,14 @@ public class S3FileStoreService : IFileStoreService
         return memoryStream;
     }
 
+    public async Task<byte[]> GetFile(string path, CancellationToken cancellationToken = default)
+    {
+        await using var stream = await ReadFile(path, cancellationToken);
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream, cancellationToken);
+        return memoryStream.ToArray();
+    }
+
     /// <summary>
     ///     Generates a {uuid}.{extension} path given a filename
     /// </summary>

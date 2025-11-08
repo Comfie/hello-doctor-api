@@ -11,10 +11,14 @@ public class BeneficiaryResponse
     public string? EmailAddress { get; set; }
     public string? MainMemberId { get; set; }
     public string? RelationshipToMainMember { get; set; }
+    public string? Gender { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public string? BeneficiaryCode { get; set; }
+    
 
     public BeneficiaryResponse(long id, string? mainMemberName, string? mainMemberContact, string firstName,
         string? lastName, string? phoneNumber, string? emailAddress, string? mainMemberId,
-        string? relationshipToMainMember)
+        string? relationshipToMainMember, string? gender, DateTime? dateOfBirth, string? beneficiaryCode)
     {
         Id = id;
         MainMemberName = mainMemberName;
@@ -25,5 +29,8 @@ public class BeneficiaryResponse
         EmailAddress = emailAddress;
         MainMemberId = mainMemberId;
         RelationshipToMainMember = relationshipToMainMember;
+        Gender = gender;
+        DateOfBirth = dateOfBirth;
+        BeneficiaryCode = beneficiaryCode;
     }
 }

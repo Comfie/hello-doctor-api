@@ -18,7 +18,10 @@ public static class DependencyInjection
     public static IServiceCollection AddWebServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabaseDeveloperPageExceptionFilter();
-        
+
+        // Add memory cache for performance optimization
+        services.AddMemoryCache();
+
         services.Configure<S3FileStoreOptions>(
             configuration.GetSection(S3FileStoreOptions.ConfigurationSection));
         services.AddScoped<IUser, CurrentUser>();

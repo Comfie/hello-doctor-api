@@ -20,7 +20,12 @@ public class GetMyPrescriptionsHandler : IRequestHandler<GetMyPrescriptionsQuery
             .AsNoTracking()
             .Where(p => p.MainMemberId == _user.Id)
             .Where(p => string.IsNullOrEmpty(request.BeneficiaryCode) || p.Beneficiary.BeneficiaryCode == request.BeneficiaryCode)
-            .Select(p => new MyPrescriptionItem(p.Id, p.Status.ToString(), p.IssuedDate, p.BeneficiaryId, p.Notes));
+            .Select(p => new MyPrescriptionItem(p.Id, 
+                p.Status.ToString(), 
+                p.IssuedDate, p.BeneficiaryId, p.Notes,
+                p.ExpiryDate,
+                p.PrescriptionFiles != null ? p.PrescriptionFiles.Count : 0,
+                p.Beneficiary.BeneficiaryCode));
 
         var list = await q.ToListAsync(ct);
         return Result.Success(list);

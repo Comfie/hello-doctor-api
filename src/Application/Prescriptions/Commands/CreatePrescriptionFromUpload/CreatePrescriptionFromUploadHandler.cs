@@ -19,12 +19,23 @@ public class CreatePrescriptionFromUploadHandler : IRequestHandler<CreatePrescri
     {
         if (string.IsNullOrWhiteSpace(_user.Id)) return Result<long>.Unauthorized();
 
-        var beneficiary = await _db.Beneficiaries.Include(b => b.MainMember).FirstOrDefaultAsync(b => b.Id == request.BeneficiaryId, ct);
+        var beneficiary = await _db.Beneficiaries
+            .Include(b => b.MainMember)
+                .ThenInclude(u => u.MainMember)
+            .FirstOrDefaultAsync(b => b.Id == request.BeneficiaryId, ct);
+
         if (beneficiary is null) return Result<long>.NotFound();
         if (beneficiary.MainMemberId != _user.Id) return Result<long>.Forbidden();
 
-        var file = await _db.FileUploads.FirstOrDefaultAsync(f => f.Id == request.FileUploadId, ct);
+        var file = await _db.FileUploads
+            .FirstOrDefaultAsync(f => f.Id == request.FileUploadId && !f.IsDeleted, ct);
+
         if (file is null) return Result<long>.NotFound();
+
+        var mainMember = await _db.ApplicationUsers
+            .FirstOrDefaultAsync(u => u.Id == _user.Id, ct);
+
+        if (mainMember is null) return Result<long>.Unauthorized();
 
         var prescription = new Prescription
         {
@@ -33,13 +44,14 @@ public class CreatePrescriptionFromUploadHandler : IRequestHandler<CreatePrescri
             Status = PrescriptionStatus.Pending,
             Notes = request.Notes,
             MainMemberId = _user.Id!,
-            MainMember = beneficiary.MainMember,
+            MainMember = mainMember,
             BeneficiaryId = beneficiary.Id,
             Beneficiary = beneficiary,
             PrescriptionFiles = new List<FileUpload> { file }
         };
 
-        long? pharmacyId = request.PharmacyId ?? beneficiary.MainMember.MainMember?.DefaultPharmacyId;
+        // Get default pharmacy from MainMember entity
+        long? pharmacyId = request.PharmacyId ?? beneficiary.MainMember?.MainMember?.DefaultPharmacyId;
         if (pharmacyId.HasValue)
         {
             prescription.AssignToPharmacy(pharmacyId.Value);

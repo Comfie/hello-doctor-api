@@ -13,13 +13,16 @@ public class PrescriptionAssignedHandler : INotificationHandler<PrescriptionAssi
     private readonly IApplicationDbContext _db;
     private readonly IUser _user;
     private readonly IDateTimeService _clock;
+    private readonly INotificationService _notificationService;
 
-    public PrescriptionAssignedHandler(IApplicationDbContext db, IUser user, IDateTimeService clock)
-    { _db = db; _user = user; _clock = clock; }
+    public PrescriptionAssignedHandler(IApplicationDbContext db, IUser user, IDateTimeService clock, INotificationService notificationService)
+    { _db = db; _user = user; _clock = clock; _notificationService = notificationService; }
 
     public async Task Handle(PrescriptionAssignedToPharmacyEvent e, CancellationToken ct)
     {
-        var pres = await _db.Prescriptions.FirstOrDefaultAsync(x => x.Id == e.PrescriptionId, ct);
+        var pres = await _db.Prescriptions
+            .Include(p => p.AssignedPharmacy)
+            .FirstOrDefaultAsync(x => x.Id == e.PrescriptionId, ct);
         if (pres is null) return;
 
         _db.PrescriptionStatusHistories.Add(new PrescriptionStatusHistory
@@ -43,6 +46,16 @@ public class PrescriptionAssignedHandler : INotificationHandler<PrescriptionAssi
         });
 
         await _db.SaveChangesAsync(ct);
+
+        // Send notification to main member
+        var pharmacyName = pres.AssignedPharmacy?.Name ?? "pharmacy";
+        await _notificationService.SendNotificationAsync(
+            pres.MainMemberId,
+            NotificationType.PrescriptionAssigned,
+            "Prescription Assigned to Pharmacy",
+            $"Your prescription RX-{pres.Id} has been assigned to {pharmacyName} and is now under review.",
+            NotificationChannel.Email,
+            ct);
     }
 }
 
@@ -51,9 +64,10 @@ public class PrescriptionDispensedHandler : INotificationHandler<PrescriptionDis
     private readonly IApplicationDbContext _db;
     private readonly IUser _user;
     private readonly IDateTimeService _clock;
+    private readonly INotificationService _notificationService;
 
-    public PrescriptionDispensedHandler(IApplicationDbContext db, IUser user, IDateTimeService clock)
-    { _db = db; _user = user; _clock = clock; }
+    public PrescriptionDispensedHandler(IApplicationDbContext db, IUser user, IDateTimeService clock, INotificationService notificationService)
+    { _db = db; _user = user; _clock = clock; _notificationService = notificationService; }
 
     public async Task Handle(PrescriptionDispensedEvent e, CancellationToken ct)
     {
@@ -81,6 +95,17 @@ public class PrescriptionDispensedHandler : INotificationHandler<PrescriptionDis
         });
 
         await _db.SaveChangesAsync(ct);
+
+        // Send notification to main member
+        var dispensedType = e.IsPartial ? "partially dispensed" : "fully dispensed";
+        var notificationType = e.IsPartial ? NotificationType.PrescriptionPartiallyDispensed : NotificationType.PrescriptionDispensed;
+        await _notificationService.SendNotificationAsync(
+            pres.MainMemberId,
+            notificationType,
+            $"Prescription {dispensedType}",
+            $"Your prescription RX-{pres.Id} has been {dispensedType}. {e.Note ?? ""}",
+            NotificationChannel.Email,
+            ct);
     }
 }
 
@@ -89,9 +114,10 @@ public class PrescriptionDeliveredHandler : INotificationHandler<PrescriptionDel
     private readonly IApplicationDbContext _db;
     private readonly IUser _user;
     private readonly IDateTimeService _clock;
+    private readonly INotificationService _notificationService;
 
-    public PrescriptionDeliveredHandler(IApplicationDbContext db, IUser user, IDateTimeService clock)
-    { _db = db; _user = user; _clock = clock; }
+    public PrescriptionDeliveredHandler(IApplicationDbContext db, IUser user, IDateTimeService clock, INotificationService notificationService)
+    { _db = db; _user = user; _clock = clock; _notificationService = notificationService; }
 
     public async Task Handle(PrescriptionDeliveredEvent e, CancellationToken ct)
     {
@@ -118,6 +144,15 @@ public class PrescriptionDeliveredHandler : INotificationHandler<PrescriptionDel
         });
 
         await _db.SaveChangesAsync(ct);
+
+        // Send notification to main member
+        await _notificationService.SendNotificationAsync(
+            pres.MainMemberId,
+            NotificationType.PrescriptionDelivered,
+            "Prescription Delivered",
+            $"Your prescription RX-{pres.Id} has been successfully delivered. Thank you for using our service!",
+            NotificationChannel.Email,
+            ct);
     }
 }
 

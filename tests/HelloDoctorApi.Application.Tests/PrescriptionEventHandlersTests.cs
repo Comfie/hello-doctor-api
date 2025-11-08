@@ -29,9 +29,17 @@ public class FakeDbContext : DbContext, IApplicationDbContext
     public DbSet<HelloDoctorApi.Domain.Entities.Auth.OneTimePin> OneTimePins => Set<HelloDoctorApi.Domain.Entities.Auth.OneTimePin>();
 
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<NotificationPreference> NotificationPreferences => Set<NotificationPreference>();
 }
 
-public class FakeUser : IUser { public string? Id { get; set; } = "tester"; }
+public class FakeUser : IUser
+{
+    public string? Id { get; set; } = "tester";
+    public long? GetPharmacyId() => null;
+    public long? GetMainMemberId() => null;
+    public long? GetDoctorId() => null;
+}
 public class FakeClock : IDateTimeService { public DateTime Now => DateTime.UtcNow; public DateTimeOffset OffsetNow => DateTimeOffset.UtcNow; }
 
 public class PrescriptionEventHandlersTests
@@ -69,7 +77,9 @@ public class PrescriptionEventHandlersTests
                 EmailAddress = "j@d.com", BeneficiaryCode = "B1",
                 Relationship = RelationshipToMainMember.Child,
                 MainMemberId = "user",
-                MainMember = user
+                MainMember = user,
+                Gender = "male",
+                DateOfBirth = DateTime.Now.AddYears(-18)
             }
         };
         db.Prescriptions.Add(pres);

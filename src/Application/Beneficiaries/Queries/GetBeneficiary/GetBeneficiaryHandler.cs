@@ -31,7 +31,10 @@ public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryComman
                 beneficiary.PhoneNumber,
                 beneficiary.EmailAddress,
                 beneficiary.MainMemberId,
-                beneficiary.Relationship.ToString()
+                beneficiary.Relationship.ToString(),
+                beneficiary.Gender,
+                beneficiary.DateOfBirth,
+                beneficiary.BeneficiaryCode
             ))
             .FirstOrDefaultAsync(cancellationToken);
 

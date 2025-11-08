@@ -22,6 +22,10 @@ public class Prescription : BaseAuditableEntity
     public long BeneficiaryId { get; set; }
     public required Beneficiary Beneficiary { get; set; }
 
+    // Doctor (optional - prescriptions can be uploaded by MainMembers)
+    public long? DoctorId { get; set; }
+    public Doctor? Doctor { get; set; }
+
     // Files & Notes
     public List<FileUpload>? PrescriptionFiles { get; set; } = new();
     public List<PrescriptionNote>? PrescriptionNotes { get; set; } = new();

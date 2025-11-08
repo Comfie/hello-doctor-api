@@ -1,18 +1,68 @@
-﻿using HelloDoctorApi.Application.Common.Interfaces;
+﻿using Ardalis.Result;
+using HelloDoctorApi.Application.Common.Interfaces;
+using HelloDoctorApi.Application.Pharmacies.Models;
+using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Repositories;
+using HelloDoctorApi.Domain.Shared;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace HelloDoctorApi.Application.Pharmacies.Updates.UpdatePharmacy;
 
-public class UpdatePharmacyCommandHandler : IRequestHandler<UpdatePharmacyCommand, int>
+public class UpdatePharmacyCommandHandler : IRequestHandler<UpdatePharmacyCommand, Result<PharmacyResponse>>
 {
     private readonly IApplicationDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IMemoryCache _cache;
 
-    public UpdatePharmacyCommandHandler(IApplicationDbContext context)
+    public UpdatePharmacyCommandHandler(IApplicationDbContext context, IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _context = context;
+        _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
-    public Task<int> Handle(UpdatePharmacyCommand request, CancellationToken cancellationToken)
+    public async Task<Result<PharmacyResponse>> Handle(UpdatePharmacyCommand request,
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        // Fetch the pharmacy
+        var pharmacy = await _context.Pharmacies
+            .FirstOrDefaultAsync(p => p.Id == request.Id && !p.IsDeleted, cancellationToken);
+
+        if (pharmacy is null)
+        {
+            return Result<PharmacyResponse>.NotFound(new Error("Pharmacy", "Pharmacy not found"));
+        }
+
+        // Update properties (null-coalescing for optional fields)
+        pharmacy.Name = request.Name ?? pharmacy.Name;
+        pharmacy.Description = request.Description ?? pharmacy.Description;
+        pharmacy.ContactNumber = request.ContactNumber ?? pharmacy.ContactNumber;
+        pharmacy.ContactEmail = request.ContactEmail ?? pharmacy.ContactEmail;
+        pharmacy.ContactPerson = request.ContactPerson ?? pharmacy.ContactPerson;
+        pharmacy.Address = request.Address ?? pharmacy.Address;
+        pharmacy.OpeningTime = request.OpeningTime ?? pharmacy.OpeningTime;
+        pharmacy.ClosingTime = request.ClosingTime ?? pharmacy.ClosingTime;
+
+        _context.Pharmacies.Update(pharmacy);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        // Invalidate pharmacy caches
+        _cache.Remove("AllPharmacies");
+        _cache.Remove("ActivePharmacies");
+
+        return Result.Success(new PharmacyResponse
+        {
+            Id = pharmacy.Id,
+            Name = pharmacy.Name,
+            Description = pharmacy.Description,
+            ContactNumber = pharmacy.ContactNumber,
+            ContactEmail = pharmacy.ContactEmail,
+            ContactPerson = pharmacy.ContactPerson,
+            Address = pharmacy.Address,
+            OpeningTime = pharmacy.OpeningTime,
+            ClosingTime = pharmacy.ClosingTime,
+            IsActive = pharmacy.IsActive
+        });
     }
 }

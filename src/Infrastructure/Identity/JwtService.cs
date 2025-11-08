@@ -56,20 +56,69 @@ public class JwtService : IJwtService
             claims.Add(new Claim("role", role)); // Add simple claim
         }
 
-        // add pharmacy context for pharmacists
-        var pharmacist = await _db.Pharmacists.AsNoTracking().FirstOrDefaultAsync(p => p.AccountId == user.Id);
-        if (pharmacist is not null)
+        // Load user context with navigation properties
+        var userContext = await _db.ApplicationUsers
+            .AsNoTracking()
+            .Include(u => u.Pharmacist)
+            .Include(u => u.MainMember)
+            .Include(u => u.SystemAdministrator)
+            .Include(u => u.Doctor)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        Console.WriteLine($"[JwtService] User ID: {user.Id}, Email: {user.Email}");
+        Console.WriteLine($"[JwtService] UserContext found: {userContext != null}");
+
+        // Try alternative query if Include doesn't work
+        if (userContext != null && userContext.Pharmacist == null)
         {
-            claims.Add(new Claim("pharmacyId", pharmacist.PharmacyId.ToString()));
+            Console.WriteLine($"[JwtService] Pharmacist not loaded via Include, trying direct query...");
+            var pharmacist = await _db.Pharmacists
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.AccountId == user.Id);
+            Console.WriteLine($"[JwtService] Direct query result - Pharmacist found: {pharmacist != null}");
+
+            if (pharmacist != null)
+            {
+                // Manually add the pharmacyId claim
+                Console.WriteLine($"[JwtService] Adding pharmacyId claim from direct query: {pharmacist.PharmacyId}");
+                claims.Add(new Claim("pharmacyId", pharmacist.PharmacyId.ToString()));
+            }
+        }
+        else
+        {
+            Console.WriteLine($"[JwtService] Pharmacist found via Include: {userContext?.Pharmacist != null}");
         }
 
-        // add main member context for members
-        var mainMember = await _db.MainMembers.AsNoTracking().FirstOrDefaultAsync(m => m.AccountId == user.Id);
-        if (mainMember is not null)
+        // Add pharmacy context for pharmacists
+        if (userContext?.Pharmacist is not null)
         {
-            claims.Add(new Claim("mainMemberId", mainMember.Id.ToString()));
+            var pharmacyId = userContext.Pharmacist.PharmacyId.ToString();
+            Console.WriteLine($"[JwtService] Adding pharmacyId claim: {pharmacyId}");
+            claims.Add(new Claim("pharmacyId", pharmacyId));
+        }
+        else
+        {
+            Console.WriteLine($"[JwtService] No Pharmacist profile found for user {user.Email}");
         }
 
+        // Add main member context for members
+        if (userContext?.MainMember is not null)
+        {
+            claims.Add(new Claim("mainMemberId", userContext.MainMember.Id.ToString()));
+        }
+
+        // Add pharmacy context for system administrators
+        if (userContext?.SystemAdministrator is not null && userContext.SystemAdministrator.PharmacyId.HasValue)
+        {
+            Console.WriteLine($"[JwtService] Adding pharmacyId claim for SystemAdministrator: {userContext.SystemAdministrator.PharmacyId}");
+            claims.Add(new Claim("pharmacyId", userContext.SystemAdministrator.PharmacyId.Value.ToString()));
+        }
+
+        // Add doctor context for doctors
+        if (userContext?.Doctor is not null)
+        {
+            claims.Add(new Claim("doctorId", userContext.Doctor.Id.ToString()));
+        }
         return claims;
     }
 

@@ -1,6 +1,8 @@
 using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using Asp.Versioning;
+using HelloDoctorApi.Application.AdminDashboard.Models;
+using HelloDoctorApi.Application.AdminDashboard.Queries.GetAdminDashboardStats;
 using HelloDoctorApi.Application.Authentications.Commands.CreateRole;
 using HelloDoctorApi.Application.Authentications.Commands.GetAllUsers;
 using HelloDoctorApi.Application.Authentications.Models;
@@ -17,11 +19,24 @@ namespace HelloDoctorApi.Web.Controllers;
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 [TranslateResultToActionResult]
-[Authorize(Roles = "SystemAdministrator")]
+[Authorize(Roles = "SystemAdministrator,SuperAdministrator")]
 public class SystemAdminController : ApiController
 {
     public SystemAdminController(ISender sender) : base(sender)
     {
+    }
+
+    /// <summary>
+    ///     Get admin dashboard statistics
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    [HttpGet("dashboard-stats")]
+    [ProducesResponseType(typeof(AdminDashboardStatsResponse), StatusCodes.Status200OK)]
+    public async Task<Result<AdminDashboardStatsResponse>> GetDashboardStats(CancellationToken cancellationToken = default)
+    {
+        var response = await Sender.Send(new GetAdminDashboardStatsCommand(), cancellationToken);
+        return response;
     }
 
     /// <summary>

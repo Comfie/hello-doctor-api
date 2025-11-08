@@ -96,9 +96,6 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("DoctorId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -162,8 +159,6 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -263,11 +258,16 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("text");
 
+                    b.Property<long?>("PharmacyId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PharmacyId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -293,6 +293,9 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -305,6 +308,10 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -362,6 +369,10 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<string>("AccountId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
 
@@ -409,6 +420,9 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
                     b.HasIndex("EmailAddress")
                         .IsUnique();
 
@@ -439,13 +453,12 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<byte[]>("FileContent")
-                        .IsRequired()
-                        .HasColumnType("bytea");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("FileType")
                         .IsRequired()
@@ -518,6 +531,108 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("MainMembers");
+                });
+
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Notification", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<int>("Channel")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long?>("PaymentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("PrescriptionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("ReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PrescriptionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.NotificationPreference", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.Property<int>("NotificationType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PreferredChannel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("NotificationPreferences");
                 });
 
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Pharmacist", b =>
@@ -649,6 +764,9 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
+                    b.Property<long?>("DoctorId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTimeOffset>("ExpiryDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -678,6 +796,8 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
                     b.HasIndex("BeneficiaryId")
                         .IsUnique();
+
+                    b.HasIndex("DoctorId");
 
                     b.HasIndex("MainMemberId")
                         .IsUnique();
@@ -950,15 +1070,6 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", b =>
-                {
-                    b.HasOne("HelloDoctorApi.Domain.Entities.Doctor", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId");
-
-                    b.Navigation("Doctor");
-                });
-
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Auth.OneTimePin", b =>
                 {
                     b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "User")
@@ -981,11 +1092,17 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Auth.SystemAdministrator", b =>
                 {
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Pharmacy", "Pharmacy")
+                        .WithMany()
+                        .HasForeignKey("PharmacyId");
+
                     b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "User")
                         .WithOne("SystemAdministrator")
                         .HasForeignKey("HelloDoctorApi.Domain.Entities.Auth.SystemAdministrator", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Pharmacy");
 
                     b.Navigation("User");
                 });
@@ -1007,6 +1124,17 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Navigation("MainMember");
                 });
 
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Doctor", b =>
+                {
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "Account")
+                        .WithOne("Doctor")
+                        .HasForeignKey("HelloDoctorApi.Domain.Entities.Doctor", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.FileUpload", b =>
                 {
                     b.HasOne("HelloDoctorApi.Domain.Entities.Prescription", null)
@@ -1024,6 +1152,34 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Account");
+                });
+
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Notification", b =>
+                {
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Prescription", "Prescription")
+                        .WithMany()
+                        .HasForeignKey("PrescriptionId");
+
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Prescription");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HelloDoctorApi.Domain.Entities.NotificationPreference", b =>
+                {
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Pharmacist", b =>
@@ -1057,6 +1213,10 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HelloDoctorApi.Domain.Entities.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId");
+
                     b.HasOne("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", "MainMember")
                         .WithOne()
                         .HasForeignKey("HelloDoctorApi.Domain.Entities.Prescription", "MainMemberId")
@@ -1066,6 +1226,8 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
                     b.Navigation("AssignedPharmacy");
 
                     b.Navigation("Beneficiary");
+
+                    b.Navigation("Doctor");
 
                     b.Navigation("MainMember");
                 });
@@ -1161,6 +1323,8 @@ namespace HelloDoctorApi.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("HelloDoctorApi.Domain.Entities.Auth.ApplicationUser", b =>
                 {
+                    b.Navigation("Doctor");
+
                     b.Navigation("MainMember");
 
                     b.Navigation("Pharmacist");

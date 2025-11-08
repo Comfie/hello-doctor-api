@@ -33,7 +33,10 @@ public class
                 beneficiary.PhoneNumber,
                 beneficiary.EmailAddress,
                 beneficiary.MainMemberId,
-                beneficiary.Relationship.ToString()
+                beneficiary.Relationship.ToString(),
+                beneficiary.Gender,
+                beneficiary.DateOfBirth,
+                beneficiary.BeneficiaryCode
             ))
             .ToListAsync(cancellationToken);
 

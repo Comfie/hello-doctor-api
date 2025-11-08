@@ -1,4 +1,5 @@
-﻿using HelloDoctorApi.Domain.Entities.Auth;
+﻿using HelloDoctorApi.Domain.Entities;
+using HelloDoctorApi.Domain.Entities.Auth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,8 @@ public class ApplicationDbContextInitializer
     private readonly RoleManager<ApplicationRole> _roleManager;
 
     public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger,
-        ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        ApplicationDbContext context, UserManager<ApplicationUser> userManager,
+        RoleManager<ApplicationRole> roleManager)
     {
         _logger = logger;
         _context = context;
@@ -95,7 +97,10 @@ public class ApplicationDbContextInitializer
         {
             await SetupRoles();
             await SeedFirstSuperAdmin();
+            await SeedFirstSystemAdmin();
+            await SeedFirstPharmacy();
             await SeedFirstMainMember();
+            await SeedFirstDoctor();
         }
         catch (Exception ex)
         {
@@ -125,10 +130,9 @@ public class ApplicationDbContextInitializer
                 var roleExists = await _roleManager.RoleExistsAsync(role);
                 if (!roleExists)
                 {
-                    await _roleManager.CreateAsync(new ApplicationRole { Name = role }); 
+                    await _roleManager.CreateAsync(new ApplicationRole { Name = role });
                     _logger.LogInformation("Role {Role} created", role);
                     continue;
-
                 }
 
                 _logger.LogInformation("Role {Role} exists", role);
@@ -142,7 +146,7 @@ public class ApplicationDbContextInitializer
 
     public async Task SeedFirstSuperAdmin()
     {
-        var user = await _userManager.FindByEmailAsync("comfynyatsine@gmail.com");
+        var user = await _userManager.FindByEmailAsync("superadmin@gmail.com");
 
         if (user is not null)
         {
@@ -150,31 +154,76 @@ public class ApplicationDbContextInitializer
             return;
         }
 
-        // Default users
-        var administrator = new ApplicationUser
+        var superAdmin = new ApplicationUser
         {
-            UserName = "comfynyatsine@gmail.com",
-            Email = "comfynyatsine@gmail.com",
+            UserName = "superadmin@gmail.com",
+            Email = "superadmin@gmail.com",
             EmailConfirmed = true,
-            FirstName = "Comfort",
-            LastName = "Nyatsine",
+            FirstName = "Super",
+            LastName = "Admin",
             IsActive = true,
             CreatedDate = DateTime.UtcNow
         };
 
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        if (_userManager.Users.All(u => u.UserName != superAdmin.UserName))
         {
-            var administratorRole = new IdentityRole("SuperAdministrator");
+            await _userManager.CreateAsync(superAdmin, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", superAdmin.Email);
 
-            await _userManager.CreateAsync(administrator, "Admin@123");
-            _logger.LogInformation("ApplicationUser {ApplicationUser} created", administrator.Email);
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            await _userManager.AddToRoleAsync(superAdmin, "SuperAdministrator");
+
+            // Create SuperAdministrator profile
+            var superAdminProfile = new SuperAdministrator
             {
-                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
-            }
+                UserId = superAdmin.Id,
+                User = superAdmin
+            };
+
+            _context.SuperAdministrators.Add(superAdminProfile);
+            await _context.SaveChangesAsync();
         }
     }
-    
+
+    public async Task SeedFirstSystemAdmin()
+    {
+        var user = await _userManager.FindByEmailAsync("systemadmin@gmail.com");
+
+        if (user is not null)
+        {
+            _logger.LogInformation("ApplicationUser {ApplicationUser} already exists", user.Email);
+            return;
+        }
+
+        var systemAdmin = new ApplicationUser
+        {
+            UserName = "systemadmin@gmail.com",
+            Email = "systemadmin@gmail.com",
+            EmailConfirmed = true,
+            FirstName = "System",
+            LastName = "Administrator",
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow
+        };
+
+        if (_userManager.Users.All(u => u.UserName != systemAdmin.UserName))
+        {
+            await _userManager.CreateAsync(systemAdmin, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", systemAdmin.Email);
+
+            await _userManager.AddToRoleAsync(systemAdmin, "SystemAdministrator");
+
+            // Create SystemAdministrator profile
+            var systemAdminProfile = new SystemAdministrator
+            {
+                UserId = systemAdmin.Id,
+                User = systemAdmin
+            };
+
+            _context.SystemAdministrators.Add(systemAdminProfile);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     public async Task SeedFirstMainMember()
     {
         var user = await _userManager.FindByEmailAsync("member@gmail.com");
@@ -185,8 +234,7 @@ public class ApplicationDbContextInitializer
             return;
         }
 
-        // Default users
-        var administrator = new ApplicationUser
+        var mainMemberUser = new ApplicationUser
         {
             UserName = "member@gmail.com",
             Email = "member@gmail.com",
@@ -197,16 +245,167 @@ public class ApplicationDbContextInitializer
             CreatedDate = DateTime.UtcNow
         };
 
-        if (_userManager.Users.All(u => u.UserName != administrator.UserName))
+        if (_userManager.Users.All(u => u.UserName != mainMemberUser.UserName))
         {
-            var administratorRole = new IdentityRole("MainMember");
+            await _userManager.CreateAsync(mainMemberUser, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", mainMemberUser.Email);
 
-            await _userManager.CreateAsync(administrator, "Admin@123");
-            _logger.LogInformation("ApplicationUser {ApplicationUser} created", administrator.Email);
-            if (!string.IsNullOrWhiteSpace(administratorRole.Name))
+            await _userManager.AddToRoleAsync(mainMemberUser, "MainMember");
+
+            // Create MainMember profile
+            var mainMemberProfile = new MainMember
             {
-                await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
+                Code = "MM001",
+                AccountId = mainMemberUser.Id,
+                Account = mainMemberUser,
+                DefaultPharmacyId = null
+            };
+
+            _context.MainMembers.Add(mainMemberProfile);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task SeedFirstPharmacy()
+    {
+        var pharmacy = _context.Pharmacies.FirstOrDefault();
+
+        if (pharmacy is not null)
+        {
+            _logger.LogInformation("Pharmacy {Pharmacy} already exists", pharmacy.Name);
+            // Still try to seed pharmacist for this pharmacy
+            await SeedFirstPharmacist(pharmacy.Id);
+            return;
+        }
+
+        pharmacy = new Pharmacy
+        {
+            Name = "Test Pharmacy",
+            Description = "Test pharmacy for development",
+            Address = "123 Main Street, Test City",
+            ContactEmail = "pharmacy@testpharmacy.com",
+            ContactPerson = "Pharmacy Manager",
+            ContactNumber = "+1234567890",
+            IsActive = true,
+            OpeningTime = TimeSpan.FromHours(8),
+            ClosingTime = TimeSpan.FromHours(17),
+        };
+
+        _context.Pharmacies.Add(pharmacy);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Pharmacy {Pharmacy} created", pharmacy.Name);
+
+        // Seed pharmacist for this pharmacy
+        await SeedFirstPharmacist(pharmacy.Id);
+    }
+
+    public async Task SeedFirstPharmacist(long pharmacyId)
+    {
+        var user = await _userManager.FindByEmailAsync("pharmacist@gmail.com");
+
+        // Create user if it doesn't exist
+        if (user is null)
+        {
+            var pharmacistUser = new ApplicationUser
+            {
+                UserName = "pharmacist@gmail.com",
+                Email = "pharmacist@gmail.com",
+                EmailConfirmed = true,
+                FirstName = "John",
+                LastName = "Pharmacist",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            await _userManager.CreateAsync(pharmacistUser, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", pharmacistUser.Email);
+
+            await _userManager.AddToRoleAsync(pharmacistUser, "Pharmacist");
+            user = pharmacistUser;
+        }
+        else
+        {
+            _logger.LogInformation("ApplicationUser {ApplicationUser} already exists", user.Email);
+
+            // Ensure the Pharmacist role is assigned even if user already exists
+            var roles = await _userManager.GetRolesAsync(user);
+            if (!roles.Contains("Pharmacist"))
+            {
+                _logger.LogInformation("Adding Pharmacist role to existing user {Email}", user.Email);
+                await _userManager.AddToRoleAsync(user, "Pharmacist");
             }
+        }
+
+        // Check if Pharmacist profile exists
+        _logger.LogInformation("Checking for Pharmacist profile for user {UserId} ({Email})", user.Id, user.Email);
+        var pharmacistProfile = await _context.Pharmacists
+            .FirstOrDefaultAsync(p => p.AccountId == user.Id);
+
+        if (pharmacistProfile is null)
+        {
+            _logger.LogInformation(
+                "Pharmacist profile not found. Creating new profile for {Email} linked to Pharmacy {PharmacyId}",
+                user.Email, pharmacyId);
+
+            // Create Pharmacist profile linking to pharmacy
+            pharmacistProfile = new Pharmacist
+            {
+                AccountId = user.Id,
+                Account = user,
+                PharmacyId = pharmacyId,
+                Pharmacy = null!
+            };
+
+            _context.Pharmacists.Add(pharmacistProfile);
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task SeedFirstDoctor()
+    {
+        var user = await _userManager.FindByEmailAsync("doctor@gmail.com");
+
+        if (user is not null)
+        {
+            _logger.LogInformation("ApplicationUser {ApplicationUser} already exists", user.Email);
+            return;
+        }
+
+        var doctorUser = new ApplicationUser
+        {
+            UserName = "doctor@gmail.com",
+            Email = "doctor@gmail.com",
+            EmailConfirmed = true,
+            FirstName = "Dr. Jane",
+            LastName = "Smith",
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow
+        };
+
+        if (_userManager.Users.All(u => u.UserName != doctorUser.UserName))
+        {
+            await _userManager.CreateAsync(doctorUser, "Admin@123");
+            _logger.LogInformation("ApplicationUser {ApplicationUser} created", doctorUser.Email);
+
+            await _userManager.AddToRoleAsync(doctorUser, "Doctor");
+        }
+        var doctorCheck = await _context.Doctors.FirstOrDefaultAsync(d => d.EmailAddress == doctorUser.Email);
+        if (doctorCheck is null)
+        {
+            _logger.LogInformation("Doctor not found, creating doctor");
+            var doctor = new Doctor
+            {
+                AccountId = doctorUser.Id,
+                Account = doctorUser,
+                FirstName = doctorUser.FirstName,
+                LastName = doctorUser.LastName,
+                EmailAddress = doctorUser.LastName,
+                PrimaryContact = doctorUser.PhoneNumber ?? string.Empty,
+                QualificationDescription = "Degree in Human Resources"
+            };
+            _context.Doctors.Add(doctor);
+            await _context.SaveChangesAsync();
         }
     }
 }

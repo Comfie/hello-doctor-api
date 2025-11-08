@@ -207,15 +207,18 @@ public class IdentityService : IIdentityService
                 break;
             case nameof(UserType.Doctor):
                 var getDoctor =
-                    await _context.Doctors.FirstOrDefaultAsync(doctor => doctor.Id == 1, cancellationToken);
-                if (getDoctor is not null)
+                    await _context.Doctors.FirstOrDefaultAsync(doctor => doctor.AccountId == applicationUser.Id, cancellationToken);
+                if (getDoctor is null)
                 {
                     var doctor = new Doctor
                     {
+                        AccountId = applicationUser.Id,
+                        Account = applicationUser,
                         FirstName = applicationUser.FirstName ?? String.Empty,
                         LastName = applicationUser.LastName ?? String.Empty,
                         EmailAddress = applicationUser.Email ?? String.Empty,
                         PrimaryContact = applicationUser.PhoneNumber ?? String.Empty,
+                        IsActive = true
                     };
                     _context.Doctors.Add(doctor);
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
@@ -238,25 +241,49 @@ public class IdentityService : IIdentityService
         return Result.Success(result);
     }
 
-    public async Task<Result<List<string>>> GetUserRolesAsync(string userId, CancellationToken cancellationToken = default)
+    public async Task<Result<List<string>>> GetUserRolesAsync(string userId, long? pharmacyId = null, CancellationToken cancellationToken = default)
     {
         var user = await _userManager.Users.SingleOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
         if (user is null)
             return Result<List<string>>.Error(new Error("Getting User Roles", "User not found"));
 
-        var roles = await _userManager.GetRolesAsync(user); 
+        // If pharmacyId is provided (SystemAdmin), verify user belongs to same pharmacy
+        if (pharmacyId.HasValue)
+        {
+            var userBelongsToPharmacy = await _context.Pharmacists
+                .AnyAsync(p => p.AccountId == userId && p.PharmacyId == pharmacyId.Value, cancellationToken) ||
+                await _context.SystemAdministrators
+                .AnyAsync(sa => sa.UserId == userId && sa.PharmacyId == pharmacyId.Value, cancellationToken);
+
+            if (!userBelongsToPharmacy)
+                return Result<List<string>>.Forbidden();
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
 
         return Result.Success(roles.ToList());
     }
 
-    public async Task<Result<bool>> UpdateRoleAsync(string userId, string role,
+    public async Task<Result<bool>> UpdateRoleAsync(string userId, string role, long? pharmacyId = null,
         CancellationToken cancellationToken = default)
     {
         var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
             return Result<bool>.Error(new Error("Updating Role", "User not found"));
+
+        // If pharmacyId is provided (SystemAdmin), verify user belongs to same pharmacy
+        if (pharmacyId.HasValue)
+        {
+            var userBelongsToPharmacy = await _context.Pharmacists
+                .AnyAsync(p => p.AccountId == userId && p.PharmacyId == pharmacyId.Value, cancellationToken) ||
+                await _context.SystemAdministrators
+                .AnyAsync(sa => sa.UserId == userId && sa.PharmacyId == pharmacyId.Value, cancellationToken);
+
+            if (!userBelongsToPharmacy)
+                return Result<bool>.Forbidden();
+        }
 
         // Remove existing roles
         var roles = await _userManager.GetRolesAsync(user);
@@ -444,10 +471,10 @@ public class IdentityService : IIdentityService
         return Result.Success(true);
     }
 
-    public async Task<Result<List<UserDetailsResponse>>> GetUsers(CancellationToken cancellationToken = default)
+    public async Task<Result<List<UserDetailsResponse>>> GetUsers(long? pharmacyId = null, CancellationToken cancellationToken = default)
     {
         // Fetch users and their roles in a single query using a join
-        var userRoles = await (from user in _context.ApplicationUsers.IncludeSoftDeleted()
+        var query = from user in _context.ApplicationUsers.IncludeSoftDeleted()
             join userRole in _context.UserRoles on user.Id equals userRole.UserId
             join role in _context.Roles on userRole.RoleId equals role.Id
             select new
@@ -459,11 +486,63 @@ public class IdentityService : IIdentityService
                 user.LastName,
                 user.PhoneNumber,
                 user.IsActive,
-                RoleName = role.Name
-            }).ToListAsync(cancellationToken);
+                RoleName = role.Name,
+                User = user
+            };
+
+        // If pharmacyId is provided (SystemAdmin), filter users by pharmacy
+        if (pharmacyId.HasValue)
+        {
+            var filteredQuery = from ur in query
+                where (_context.Pharmacists.Any(p => p.AccountId == ur.User.Id && p.PharmacyId == pharmacyId.Value) ||
+                       _context.SystemAdministrators.Any(sa => sa.UserId == ur.User.Id && sa.PharmacyId == pharmacyId.Value))
+                select new
+                {
+                    ur.Email,
+                    ur.Id,
+                    ur.UserName,
+                    ur.FirstName,
+                    ur.LastName,
+                    ur.PhoneNumber,
+                    ur.IsActive,
+                    ur.RoleName
+                };
+
+            var userRoles = await filteredQuery.ToListAsync(cancellationToken);
+
+            // Group the results by user and aggregate roles
+            var groupedUsers = userRoles
+                .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive })
+                .Select(g => new UserDetailsResponse
+                {
+                    Email = g.Key.Email,
+                    Id = g.Key.Id,
+                    Username = g.Key.UserName,
+                    FirstName = g.Key.FirstName,
+                    LastName = g.Key.LastName,
+                    IsActive = g.Key.IsActive,
+                    Role = string.Join(",", g.Select(u => u.RoleName)),
+                    PhoneNumber = g.Key.PhoneNumber
+                }).ToList();
+
+            return Result.Success(groupedUsers);
+        }
+
+        // SuperAdmin: return all users
+        var allUserRoles = await query.Select(ur => new
+        {
+            ur.Email,
+            ur.Id,
+            ur.UserName,
+            ur.FirstName,
+            ur.LastName,
+            ur.PhoneNumber,
+            ur.IsActive,
+            ur.RoleName
+        }).ToListAsync(cancellationToken);
 
         // Group the results by user and aggregate roles
-        var groupedUsers = userRoles
+        var allGroupedUsers = allUserRoles
             .GroupBy(u => new { u.Email, u.Id, u.UserName, u.FirstName, u.LastName, u.PhoneNumber, u.IsActive })
             .Select(g => new UserDetailsResponse
             {
@@ -478,7 +557,7 @@ public class IdentityService : IIdentityService
             }).ToList();
 
 
-        return Result.Success(groupedUsers);
+        return Result.Success(allGroupedUsers);
     }
 
     public async Task<Result<List<UserRoleResponse>>> GetRolesAsync(CancellationToken cancellationToken = default)

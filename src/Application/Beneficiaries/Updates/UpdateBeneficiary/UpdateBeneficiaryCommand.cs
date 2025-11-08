@@ -9,4 +9,7 @@ public record UpdateBeneficiaryCommand(
     string? FirstName,
     string? LastName,
     string? PhoneNumber,
-    string? EmailAddress) : IRequest<Result<BeneficiaryResponse>>;
+    string? EmailAddress,
+    string? Gender,
+    DateTime? DateOfBirth,
+    string? RelationshipToMainMember) : IRequest<Result<BeneficiaryResponse>>;

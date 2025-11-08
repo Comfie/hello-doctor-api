@@ -20,5 +20,7 @@ public interface IApplicationDbContext
     DbSet<PrescriptionStatusHistory> PrescriptionStatusHistories { get; }
     DbSet<FileUpload> FileUploads { get; }
     DbSet<AuditLog> AuditLogs { get; }
+    DbSet<Notification> Notifications { get; }
+    DbSet<NotificationPreference> NotificationPreferences { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

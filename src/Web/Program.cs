@@ -8,6 +8,12 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 
+using System.IdentityModel.Tokens.Jwt;
+
+// Clear the default claim type mapping to preserve custom claims
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
+
 var builder = WebApplication.CreateBuilder(args);
 
 try

@@ -19,6 +19,14 @@ public class LocalFileStoreService : IFileStoreService
         return Task.FromResult<Stream>(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
     }
 
+    public async Task<byte[]> GetFile(string path, CancellationToken cancellationToken = default)
+    {
+        await using var fileStream = await ReadFile(path, cancellationToken);
+        using var memoryStream = new MemoryStream();
+        await fileStream.CopyToAsync(memoryStream, cancellationToken);
+        return memoryStream.ToArray();
+    }
+
     /// <summary>
     ///     Generates a {uuid}.{extension} path given a filename
     /// </summary>
