@@ -5,6 +5,7 @@ using Ardalis.Result;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Application.Payments.Models;
 using HelloDoctorApi.Domain.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace HelloDoctorApi.Infrastructure.Payments;
@@ -26,7 +27,7 @@ public class PayFastGateway : IPaymentGateway
 
     public PaymentProvider Provider => PaymentProvider.PayFast;
 
-    public async Task<Result<PaymentInitiationResponse>> InitiatePaymentAsync(
+    public Task<Result<PaymentInitiationResponse>> InitiatePaymentAsync(
         PaymentInitiationRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -58,15 +59,16 @@ public class PayFastGateway : IPaymentGateway
             // Build payment URL
             var paymentUrl = $"{_settings.GetPaymentUrl()}?{BuildQueryString(paymentData)}";
 
-            return Result.Success(new PaymentInitiationResponse(
+            return Task.FromResult(Result.Success(new PaymentInitiationResponse(
                 Success: true,
                 PaymentUrl: paymentUrl,
                 ExternalReference: request.PaymentId.ToString()
-            ));
+            )));
         }
         catch (Exception ex)
         {
-            return Result<PaymentInitiationResponse>.Error(new[] { ex.Message });
+            var errorMessage = ex.Message;
+            return Task.FromResult(Result<PaymentInitiationResponse>.Error(errorMessage));
         }
     }
 
@@ -96,11 +98,12 @@ public class PayFastGateway : IPaymentGateway
         }
         catch (Exception ex)
         {
-            return Result<PaymentVerificationResponse>.Error(new[] { ex.Message });
+            var errorMessage = ex.Message;
+            return Result<PaymentVerificationResponse>.Error(errorMessage);
         }
     }
 
-    public async Task<Result<PaymentCallbackResponse>> ProcessCallbackAsync(
+    public Task<Result<PaymentCallbackResponse>> ProcessCallbackAsync(
         Dictionary<string, string> callbackData,
         CancellationToken cancellationToken = default)
     {
@@ -109,7 +112,7 @@ public class PayFastGateway : IPaymentGateway
             // 1. Validate signature
             if (!ValidateWebhookSignature(callbackData, callbackData.GetValueOrDefault("signature") ?? ""))
             {
-                return Result<PaymentCallbackResponse>.Error("Invalid signature");
+                return Task.FromResult(Result<PaymentCallbackResponse>.Error("Invalid signature"));
             }
 
             // 2. Extract payment data
@@ -127,21 +130,22 @@ public class PayFastGateway : IPaymentGateway
                 _ => PaymentStatus.Pending
             };
 
-            return Result.Success(new PaymentCallbackResponse(
+            return Task.FromResult(Result.Success(new PaymentCallbackResponse(
                 Success: true,
                 PaymentId: paymentId,
                 Status: status,
                 ExternalTransactionId: pfPaymentId,
                 AmountPaid: amountGross
-            ));
+            )));
         }
         catch (Exception ex)
         {
-            return Result<PaymentCallbackResponse>.Error(new[] { ex.Message });
+            var errorMessage = ex.Message;
+            return Task.FromResult(Result<PaymentCallbackResponse>.Error(errorMessage));
         }
     }
 
-    public async Task<Result<PaymentRefundResponse>> RefundPaymentAsync(
+    public Task<Result<PaymentRefundResponse>> RefundPaymentAsync(
         string externalTransactionId,
         decimal amount,
         string reason,
@@ -150,7 +154,7 @@ public class PayFastGateway : IPaymentGateway
         // PayFast refunds are done manually through their dashboard
         // or via API (requires additional setup)
         // For now, we'll mark it as manual refund required
-        return Result<PaymentRefundResponse>.Error("PayFast refunds must be processed manually through the PayFast dashboard");
+        return Task.FromResult(Result<PaymentRefundResponse>.Error("PayFast refunds must be processed manually through the PayFast dashboard"));
     }
 
     public bool ValidateWebhookSignature(Dictionary<string, string> data, string signature)

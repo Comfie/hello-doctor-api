@@ -129,10 +129,10 @@ public class PaymentController : ApiController
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> StripeCallback(CancellationToken cancellationToken)
+    public Task<IActionResult> StripeCallback(CancellationToken cancellationToken)
     {
         // TODO: Implement when Stripe gateway is added
-        return Ok();
+        return Task.FromResult<IActionResult>(Ok());
     }
 
     /// <summary>
@@ -144,9 +144,9 @@ public class PaymentController : ApiController
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> PayPalCallback(CancellationToken cancellationToken)
+    public Task<IActionResult> PayPalCallback(CancellationToken cancellationToken)
     {
         // TODO: Implement when PayPal gateway is added
-        return Ok();
+        return Task.FromResult<IActionResult>(Ok());
     }
 }
