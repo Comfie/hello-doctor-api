@@ -134,6 +134,13 @@ public static class DependencyInjection
         services.AddTransient<IMainMemberService, MainMainMemberService>();
         services.AddScoped<INotificationService, Services.Notifications.EmailNotificationService>();
 
+        // Payment Gateway Services
+        services.Configure<Payments.PayFastSettings>(configuration.GetSection(Payments.PayFastSettings.SectionName));
+        services.AddScoped<IPaymentGateway, Payments.PayFastGateway>();
+        // Add more payment gateways here as needed:
+        // services.AddScoped<IPaymentGateway, Payments.StripeGateway>();
+        // services.AddScoped<IPaymentGateway, Payments.PayPalGateway>();
+
         services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
 
