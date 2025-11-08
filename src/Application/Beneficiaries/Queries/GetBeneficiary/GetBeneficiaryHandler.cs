@@ -19,10 +19,8 @@ public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryComman
     public async Task<Result<BeneficiaryResponse>> Handle(GetBeneficiaryCommand request,
         CancellationToken cancellationToken)
     {
-        // Get MainMemberId from JWT claims (returns long?)
-        var userMainMemberId = _user.GetMainMemberId();
-
-        if (!userMainMemberId.HasValue)
+        // Validate user is authenticated
+        if (string.IsNullOrWhiteSpace(_user.Id))
         {
             return Result<BeneficiaryResponse>.Forbidden();
         }
@@ -32,7 +30,7 @@ public class GetBeneficiaryCommandHandler : IRequestHandler<GetBeneficiaryComman
             .Include(beneficiary => beneficiary.MainMember)
             .Where(x => x.IsDeleted == false)
             .Where(x => x.Id == request.Id)
-            .Where(x => x.MainMemberId == userMainMemberId.Value) // Enforce ownership
+            .Where(x => x.MainMemberId == _user.Id) // Enforce ownership - MainMemberId is the user account ID (string)
             .Select(beneficiary => new BeneficiaryResponse(
                 beneficiary.Id,
                 beneficiary.MainMember.FirstName + " " + beneficiary.MainMember.LastName,
