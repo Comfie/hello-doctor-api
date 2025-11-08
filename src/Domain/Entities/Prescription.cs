@@ -62,4 +62,29 @@ public class Prescription : BaseAuditableEntity
         Status = PrescriptionStatus.Delivered;
         AddDomainEvent(new Events.PrescriptionDeliveredEvent(Id, old, Status));
     }
+
+    public void MarkAsAwaitingPayment()
+    {
+        if (Status != PrescriptionStatus.Pending)
+            return;
+
+        Status = PrescriptionStatus.PaymentPending;
+    }
+
+    public void ApproveAfterPayment()
+    {
+        if (Status != PrescriptionStatus.PaymentPending)
+            return;
+
+        Status = PrescriptionStatus.Approved;
+    }
+
+    public void RejectDueToFailedPayment(string reason)
+    {
+        if (Status != PrescriptionStatus.PaymentPending)
+            return;
+
+        Status = PrescriptionStatus.OnHold;
+        // Note about payment failure will be added via PrescriptionNote
+    }
 }

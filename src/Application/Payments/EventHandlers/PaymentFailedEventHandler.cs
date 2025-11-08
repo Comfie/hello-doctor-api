@@ -31,7 +31,7 @@ public class PaymentFailedEventHandler : INotificationHandler<PaymentFailedEvent
             notification.FailureReason
         );
 
-        // If payment is for a prescription, you may want to take specific action
+        // If payment is for a prescription, update prescription status
         if (notification.PrescriptionId.HasValue)
         {
             var prescription = await _context.Prescriptions
@@ -44,11 +44,37 @@ public class PaymentFailedEventHandler : INotificationHandler<PaymentFailedEvent
                     prescription.Id
                 );
 
-                // TODO: Based on business rules, you may want to:
-                // - Mark prescription as payment failed
-                // - Send notification to user to retry payment
-                // - Add note to prescription about payment failure
-                // - Set a retry counter or expiry time
+                // Mark prescription as on hold due to failed payment
+                prescription.RejectDueToFailedPayment(notification.FailureReason);
+
+                // Add a note about the payment failure
+                var payer = await _context.ApplicationUsers
+                    .FirstOrDefaultAsync(u => u.Id == notification.PayerId, cancellationToken);
+
+                if (payer != null)
+                {
+                    var note = new Domain.Entities.PrescriptionNote
+                    {
+                        PrescriptionId = prescription.Id,
+                        Prescription = prescription,
+                        UserId = notification.PayerId,
+                        User = payer,
+                        UserType = Domain.Enums.UserType.MainMember,
+                        Note = $"Payment failed. Reason: {notification.FailureReason}. Amount: R{notification.Amount:F2}. Please retry payment to continue.",
+                        CreatedDate = DateTimeOffset.UtcNow,
+                        IsPrivate = false,
+                        IsSystemGenerated = true
+                    };
+                    _context.PrescriptionNotes.Add(note);
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                _logger.LogWarning(
+                    "Prescription {PrescriptionId} marked as OnHold due to payment failure. Status: {Status}",
+                    prescription.Id,
+                    prescription.Status
+                );
             }
         }
 

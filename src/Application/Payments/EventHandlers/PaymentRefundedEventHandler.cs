@@ -43,10 +43,40 @@ public class PaymentRefundedEventHandler : INotificationHandler<PaymentRefundedE
                     prescription.Id
                 );
 
-                // TODO: Based on business rules, you may want to:
-                // - Revert prescription status to previous state
-                // - Add note about refund to prescription
-                // - Notify doctor/pharmacy about refund
+                // Revert prescription to PaymentPending status
+                if (prescription.Status == Domain.Enums.PrescriptionStatus.Approved)
+                {
+                    prescription.Status = Domain.Enums.PrescriptionStatus.PaymentPending;
+                }
+
+                // Add a note about the refund
+                var payer = await _context.ApplicationUsers
+                    .FirstOrDefaultAsync(u => u.Id == notification.PayerId, cancellationToken);
+
+                if (payer != null)
+                {
+                    var note = new Domain.Entities.PrescriptionNote
+                    {
+                        PrescriptionId = prescription.Id,
+                        Prescription = prescription,
+                        UserId = notification.PayerId,
+                        User = payer,
+                        UserType = Domain.Enums.UserType.MainMember,
+                        Note = $"Payment refunded. Reason: {notification.RefundReason}. Amount: R{notification.Amount:F2}. Prescription reverted to PaymentPending status.",
+                        CreatedDate = DateTimeOffset.UtcNow,
+                        IsPrivate = false,
+                        IsSystemGenerated = true
+                    };
+                    _context.PrescriptionNotes.Add(note);
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation(
+                    "Prescription {PrescriptionId} reverted to PaymentPending after refund. Status: {Status}",
+                    prescription.Id,
+                    prescription.Status
+                );
             }
         }
 

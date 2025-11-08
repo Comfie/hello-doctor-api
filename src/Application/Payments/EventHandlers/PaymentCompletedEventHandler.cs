@@ -31,7 +31,7 @@ public class PaymentCompletedEventHandler : INotificationHandler<PaymentComplete
             notification.ExternalTransactionId
         );
 
-        // If payment is for a prescription, you can update prescription status here
+        // If payment is for a prescription, update prescription status
         if (notification.PrescriptionId.HasValue)
         {
             var prescription = await _context.Prescriptions
@@ -46,16 +46,45 @@ public class PaymentCompletedEventHandler : INotificationHandler<PaymentComplete
                     prescription.Status
                 );
 
-                // TODO: Based on business rules, you may want to:
-                // - Update prescription status (e.g., from Pending to Approved after payment)
-                // - Send notification to doctor/pharmacy
-                // - Create invoice record
-                // Example:
-                // if (prescription.Status == PrescriptionStatus.Pending)
-                // {
-                //     prescription.Status = PrescriptionStatus.Approved;
-                //     await _context.SaveChangesAsync(cancellationToken);
-                // }
+                // Approve prescription after successful payment
+                prescription.ApproveAfterPayment();
+
+                // Add a note about the payment
+                var payer = await _context.ApplicationUsers
+                    .FirstOrDefaultAsync(u => u.Id == notification.PayerId, cancellationToken);
+
+                if (payer != null)
+                {
+                    var note = new Domain.Entities.PrescriptionNote
+                    {
+                        PrescriptionId = prescription.Id,
+                        Prescription = prescription,
+                        UserId = notification.PayerId,
+                        User = payer,
+                        UserType = Domain.Enums.UserType.MainMember,
+                        Note = $"Payment completed successfully. Transaction ID: {notification.ExternalTransactionId}. Amount: R{notification.Amount:F2}",
+                        CreatedDate = DateTimeOffset.UtcNow,
+                        IsPrivate = false,
+                        IsSystemGenerated = true
+                    };
+                    _context.PrescriptionNotes.Add(note);
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation(
+                    "Prescription {PrescriptionId} approved after successful payment. New status: {Status}",
+                    prescription.Id,
+                    prescription.Status
+                );
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Payment {PaymentId} references non-existent Prescription {PrescriptionId}",
+                    notification.PaymentId,
+                    notification.PrescriptionId.Value
+                );
             }
         }
 
