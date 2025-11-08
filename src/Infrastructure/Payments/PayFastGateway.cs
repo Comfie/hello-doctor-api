@@ -1,6 +1,6 @@
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 using Ardalis.Result;
 using HelloDoctorApi.Application.Common.Interfaces;
 using HelloDoctorApi.Application.Payments.Models;
@@ -170,12 +170,12 @@ public class PayFastGateway : IPaymentGateway
     {
         // Sort data alphabetically and create parameter string
         var sortedData = data.OrderBy(kvp => kvp.Key);
-        var parameterString = string.Join("&", sortedData.Select(kvp => $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
+        var parameterString = string.Join("&", sortedData.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
 
         // Add passphrase if configured
         if (!string.IsNullOrEmpty(_settings.Passphrase))
         {
-            parameterString += $"&passphrase={HttpUtility.UrlEncode(_settings.Passphrase)}";
+            parameterString += $"&passphrase={WebUtility.UrlEncode(_settings.Passphrase)}";
         }
 
         // Generate MD5 hash
@@ -186,7 +186,7 @@ public class PayFastGateway : IPaymentGateway
 
     private string BuildQueryString(Dictionary<string, string> data)
     {
-        return string.Join("&", data.Select(kvp => $"{kvp.Key}={HttpUtility.UrlEncode(kvp.Value)}"));
+        return string.Join("&", data.Select(kvp => $"{kvp.Key}={WebUtility.UrlEncode(kvp.Value)}"));
     }
 
     private string GetItemName(PaymentPurpose purpose)
