@@ -1,5 +1,6 @@
 using HelloDoctorApi.Domain.Entities.Auth;
 using HelloDoctorApi.Domain.Enums;
+using HelloDoctorApi.Domain.Events;
 
 namespace HelloDoctorApi.Domain.Entities;
 
@@ -50,6 +51,22 @@ public class Payment : BaseAuditableEntity
     public Invoice? Invoice { get; set; }
 
     // Domain Methods
+    public void MarkAsInitiated()
+    {
+        InitiatedAt = DateTimeOffset.UtcNow;
+        Status = PaymentStatus.Pending;
+
+        // Raise domain event
+        AddDomainEvent(new PaymentInitiatedEvent(
+            Id,
+            PayerId,
+            Amount,
+            Purpose,
+            PrescriptionId,
+            Provider
+        ));
+    }
+
     public void MarkAsCompleted(string externalTransactionId, string? callbackData = null)
     {
         Status = PaymentStatus.Completed;
@@ -57,6 +74,20 @@ public class Payment : BaseAuditableEntity
         ExternalTransactionId = externalTransactionId;
         CallbackData = callbackData;
         CallbackReceivedAt = DateTimeOffset.UtcNow;
+
+        // Raise domain event
+        AddDomainEvent(new PaymentCompletedEvent(
+            Id,
+            PayerId,
+            Amount,
+            Purpose,
+            PrescriptionId,
+            PayeeId,
+            PayeeType,
+            externalTransactionId,
+            Provider,
+            CompletedAt.Value
+        ));
     }
 
     public void MarkAsFailed(string reason, string? callbackData = null)
@@ -66,6 +97,18 @@ public class Payment : BaseAuditableEntity
         FailureReason = reason;
         CallbackData = callbackData;
         CallbackReceivedAt = DateTimeOffset.UtcNow;
+
+        // Raise domain event
+        AddDomainEvent(new PaymentFailedEvent(
+            Id,
+            PayerId,
+            Amount,
+            Purpose,
+            PrescriptionId,
+            reason,
+            Provider,
+            FailedAt.Value
+        ));
     }
 
     public void MarkAsRefunded(string reason)
@@ -73,11 +116,33 @@ public class Payment : BaseAuditableEntity
         Status = PaymentStatus.Refunded;
         RefundedAt = DateTimeOffset.UtcNow;
         RefundReason = reason;
+
+        // Raise domain event
+        AddDomainEvent(new PaymentRefundedEvent(
+            Id,
+            PayerId,
+            Amount,
+            Purpose,
+            PrescriptionId,
+            reason,
+            Provider,
+            RefundedAt.Value
+        ));
     }
 
     public void MarkAsCancelled()
     {
         Status = PaymentStatus.Cancelled;
+
+        // Raise domain event
+        AddDomainEvent(new PaymentCancelledEvent(
+            Id,
+            PayerId,
+            Amount,
+            Purpose,
+            PrescriptionId,
+            Provider
+        ));
     }
 }
 

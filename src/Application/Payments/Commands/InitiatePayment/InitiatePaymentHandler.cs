@@ -63,12 +63,14 @@ public class InitiatePaymentHandler : IRequestHandler<InitiatePaymentCommand, Re
             Method = PaymentMethod.CreditCard, // Will be determined by gateway
             Provider = request.Provider,
             PrescriptionId = request.PrescriptionId,
-            InitiatedAt = DateTimeOffset.UtcNow,
             Notes = request.Notes
         };
 
         _context.Payments.Add(payment);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Mark as initiated to raise PaymentInitiatedEvent
+        payment.MarkAsInitiated();
 
         // Get the appropriate payment gateway
         var gateway = _paymentGateways.FirstOrDefault(g => g.Provider == request.Provider);
