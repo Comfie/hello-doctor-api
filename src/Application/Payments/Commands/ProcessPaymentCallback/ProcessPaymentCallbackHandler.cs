@@ -34,7 +34,10 @@ public class ProcessPaymentCallbackHandler : IRequestHandler<ProcessPaymentCallb
 
         if (!callbackResult.IsSuccess)
         {
-            return Result<bool>.Error(callbackResult.Errors);
+            var errorMessage = callbackResult.Errors.Any()
+                ? string.Join(", ", callbackResult.Errors)
+                : "Payment callback processing failed";
+            return Result<bool>.Error(errorMessage);
         }
 
         var callbackResponse = callbackResult.Value;

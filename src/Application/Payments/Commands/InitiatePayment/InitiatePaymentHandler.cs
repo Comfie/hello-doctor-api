@@ -103,9 +103,10 @@ public class InitiatePaymentHandler : IRequestHandler<InitiatePaymentCommand, Re
 
         if (!initiationResult.IsSuccess || initiationResult.Value.PaymentUrl == null)
         {
-            payment.MarkAsFailed(initiationResult.Value.ErrorMessage ?? "Failed to initiate payment");
+            var errorMessage = initiationResult.Value.ErrorMessage ?? "Failed to initiate payment";
+            payment.MarkAsFailed(errorMessage);
             await _context.SaveChangesAsync(cancellationToken);
-            return Result<InitiatePaymentResponse>.Error(initiationResult.Errors);
+            return Result<InitiatePaymentResponse>.Error(errorMessage);
         }
 
         // Update payment with payment URL
