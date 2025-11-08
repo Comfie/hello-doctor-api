@@ -19,6 +19,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer"/>
         <PackageReference Include="Otp.NET"/>
         <PackageReference Include="Scrutor"/>
+        <PackageReference Include="System.Web.HttpUtility"/>
     </ItemGroup>
 
     <ItemGroup>
