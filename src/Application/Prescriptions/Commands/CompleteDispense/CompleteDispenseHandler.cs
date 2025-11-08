@@ -7,14 +7,36 @@ namespace HelloDoctorApi.Application.Prescriptions.Commands.CompleteDispense;
 public class CompleteDispenseHandler : IRequestHandler<CompleteDispenseCommand, Result<bool>>
 {
     private readonly IApplicationDbContext _db;
+    private readonly IUser _user;
+    private readonly IIdentityService _identityService;
 
-    public CompleteDispenseHandler(IApplicationDbContext db)
-    { _db = db; }
+    public CompleteDispenseHandler(IApplicationDbContext db, IUser user, IIdentityService identityService)
+    {
+        _db = db;
+        _user = user;
+        _identityService = identityService;
+    }
 
     public async Task<Result<bool>> Handle(CompleteDispenseCommand request, CancellationToken ct)
     {
         var pres = await _db.Prescriptions.FirstOrDefaultAsync(x => x.Id == request.PrescriptionId, ct);
         if (pres is null) return Result<bool>.NotFound();
+
+        // Get user's pharmacy context from JWT claims
+        var userPharmacyId = _user.GetPharmacyId();
+
+        // Check if user is SuperAdministrator (can complete any prescription)
+        var isSuperAdmin = await _identityService.IsInRoleAsync(_user.Id!, "SuperAdministrator", ct);
+
+        // For non-SuperAdministrators, enforce pharmacy scope
+        if (!isSuperAdmin.IsSuccess)
+        {
+            // Validate prescription is assigned to user's pharmacy
+            if (!userPharmacyId.HasValue || pres.AssignedPharmacyId != userPharmacyId.Value)
+            {
+                return Result<bool>.Forbidden();
+            }
+        }
 
         pres.CompleteDispense(request.IsPartial, request.Note);
         await _db.SaveChangesAsync(ct);

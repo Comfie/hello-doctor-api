@@ -22,7 +22,13 @@ public class DeleteBeneficiaryCommandHandler : IRequestHandler<DeleteBeneficiary
     {
         var beneficiary = await _context.Beneficiaries.FirstOrDefaultAsync(b => b.Id == request.Id, cancellationToken);
         if (beneficiary is null) return Result<bool>.NotFound();
-        if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id) return Result<bool>.Forbidden();
+
+        // Validate ownership: beneficiary must belong to the requesting MainMember
+        // beneficiary.MainMemberId is a string (user account ID), so compare with _user.Id
+        if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id)
+        {
+            return Result<bool>.Forbidden();
+        }
 
         beneficiary.IsDeleted = true;
         beneficiary.DeletedAt = DateTimeOffset.UtcNow;

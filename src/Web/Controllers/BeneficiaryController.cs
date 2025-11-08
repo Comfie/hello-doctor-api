@@ -17,7 +17,7 @@ namespace HelloDoctorApi.Web.Controllers;
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
 [TranslateResultToActionResult]
-[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "MainMember")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class BeneficiaryController : ApiController
 {
     public BeneficiaryController(ISender sender)
@@ -31,6 +31,7 @@ public class BeneficiaryController : ApiController
     /// <param name="request">the deatils for the beneficiary</param>
     /// <param name="cancellationToken"></param>
     /// <returns>custom response with message</returns>
+    [Authorize(Roles = "MainMember")]
     [HttpPost("create")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -47,6 +48,7 @@ public class BeneficiaryController : ApiController
     /// </summary>
     /// <param name="cancellationToken"></param>
     /// <returns>list of beneficiary</returns>
+    [Authorize(Roles = "MainMember,Doctor,SuperAdministrator")]
     [HttpGet("get-all-beneficiaries")]
     public async Task<Result<List<BeneficiaryResponse>>> GetAllBeneficiaries(
         CancellationToken cancellationToken = default)
@@ -62,6 +64,7 @@ public class BeneficiaryController : ApiController
     /// <param name="id">main member identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>list of beneficiary</returns>
+    [Authorize(Roles = "MainMember,Doctor,SuperAdministrator")]
     [HttpGet("get-all-member-beneficiaries/{id}")]
     public async Task<Result<List<BeneficiaryResponse>>> GetAllMemberBeneficiaries(string id,
         CancellationToken cancellationToken)
@@ -77,6 +80,7 @@ public class BeneficiaryController : ApiController
     /// <param name="id">beneficiary identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>beneficiary details</returns>
+    [Authorize(Roles = "MainMember,Doctor,SuperAdministrator")]
     [HttpGet("get-beneficiary/{id}")]
     public async Task<Result<BeneficiaryResponse>> GetBeneficiaryById(long id, CancellationToken cancellationToken)
     {
@@ -90,6 +94,7 @@ public class BeneficiaryController : ApiController
     /// <param name="request">the details for the beneficiary</param>
     /// <param name="cancellationToken"></param>
     /// <returns>custom response with message</returns>
+    [Authorize(Roles = "MainMember")]
     [HttpPut("update-beneficiary")]
     [ProducesResponseType(typeof(BeneficiaryResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -119,6 +124,7 @@ public class BeneficiaryController : ApiController
     /// <param name="id">beneficiary identifier</param>
     /// <param name="cancellationToken"></param>
     /// <returns>custom response with message</returns>
+    [Authorize(Roles = "MainMember")]
     [HttpDelete("{id}")]
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -7,16 +7,46 @@ namespace HelloDoctorApi.Application.Prescriptions.Queries.ListAllPrescriptions;
 public class ListAllPrescriptionsHandler : IRequestHandler<ListAllPrescriptionsQuery, Result<List<ListPrescriptionItem>>>
 {
     private readonly IApplicationDbContext _db;
+    private readonly IUser _user;
+    private readonly IIdentityService _identityService;
 
-    public ListAllPrescriptionsHandler(IApplicationDbContext db) { _db = db; }
+    public ListAllPrescriptionsHandler(IApplicationDbContext db, IUser user, IIdentityService identityService)
+    {
+        _db = db;
+        _user = user;
+        _identityService = identityService;
+    }
 
     public async Task<Result<List<ListPrescriptionItem>>> Handle(ListAllPrescriptionsQuery request, CancellationToken ct)
     {
         var skip = (request.Page - 1) * request.PageSize;
-        var query = _db.Prescriptions
+
+        // Get user's pharmacy context from JWT claims
+        var userPharmacyId = _user.GetPharmacyId();
+
+        // Check if user is SuperAdministrator (can see all prescriptions)
+        var isSuperAdmin = await _identityService.IsInRoleAsync(_user.Id!, "SuperAdministrator", ct);
+
+        // Explicitly use IQueryable to allow query modification
+        IQueryable<Domain.Entities.Prescription> query = _db.Prescriptions
             .AsNoTracking()
             .Include(x => x.Beneficiary)
-            .Include(x => x.MainMember)
+            .Include(x => x.MainMember);
+
+        // For non-SuperAdministrators, filter by pharmacy scope
+        if (!isSuperAdmin.IsSuccess)
+        {
+            if (!userPharmacyId.HasValue)
+            {
+                // User has no pharmacy context, return empty list
+                return Result.Success(new List<ListPrescriptionItem>());
+            }
+
+            // Filter prescriptions by user's pharmacy
+            query = query.Where(p => p.AssignedPharmacyId == userPharmacyId.Value);
+        }
+
+        var list = await query
             .OrderByDescending(p => p.IssuedDate)
             .Skip(skip)
             .Take(request.PageSize)
@@ -27,9 +57,9 @@ public class ListAllPrescriptionsHandler : IRequestHandler<ListAllPrescriptionsQ
                 p.BeneficiaryId,
                 p.Beneficiary.FirstName + " " + p.Beneficiary.LastName,
                 p.IssuedDate
-            ));
+            ))
+            .ToListAsync(ct);
 
-        var list = await query.ToListAsync(ct);
         return Result.Success(list);
     }
 }

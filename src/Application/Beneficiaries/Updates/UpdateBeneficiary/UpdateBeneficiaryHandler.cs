@@ -36,6 +36,8 @@ public class UpdateBeneficiaryHandler : IRequestHandler<UpdateBeneficiaryCommand
             return Result<BeneficiaryResponse>.NotFound(new Error("Beneficiary", "Beneficiary not found"));
         }
 
+        // Validate ownership: beneficiary must belong to the requesting MainMember
+        // beneficiary.MainMemberId is a string (user account ID), so compare with _user.Id
         if (string.IsNullOrWhiteSpace(_user.Id) || beneficiary.MainMemberId != _user.Id)
         {
             return Result<BeneficiaryResponse>.Forbidden();
