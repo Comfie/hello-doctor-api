@@ -1,43 +1,92 @@
-version: '3.4'
+version: '3.8'
 
 services:
-  hellodoctor.api:
-    image: ${DOCKER_REGISTRY-}hellodoctorapi
-    container_name: hellodoctor.api
-    build:
-      context: .
-      target: final
-      dockerfile: src/Web/Dockerfile
-    ports:
-      - "8080:8080"
-      - "5001:5001"
-    depends_on:
-      hellodoctor.database:
-        condition: service_healthy
-
-  hellodoctor.database:
-    image: postgres:latest
-    restart: always
-    user: postgres
-    container_name: hellodoctor.database
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: hellodoctor-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: hello_doctor_db
+      POSTGRES_USER: hellodoctor_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Admin@123}
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=Admin@123
-      - POSTGRES_DB=hello_doctor_db
     volumes:
-      - ./.containers/hello-doctor-db:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hellodoctor-network
     healthcheck:
-        test: [ "CMD", "pg_isready" ]
-        interval: 10s
-        timeout: 5s
-        retries: 5
+      test: ["CMD-SHELL", "pg_isready -U hellodoctor_user -d hello_doctor_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  
-  # nhume.cache:
-  #   image: redis:latest
-  #   container_name: nhumeapi.cache
-  #   restart: always
-  #   ports:
-  #     - "6379:6379"
+  # Hello Doctor API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hellodoctor-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=hello_doctor_db;Username=hellodoctor_user;Password=${DB_PASSWORD:-Admin@123};Include Error Detail=false
+      - AppSettings__Secret=${JWT_SECRET}
+      - AppSettings__ValidAudience=${API_URL:-http://localhost}
+      - AppSettings__ValidIssuer=${API_URL:-http://localhost}
+      - AppSettings__WebUrl=${API_URL:-http://localhost}
+      - PayFast__MerchantId=${PAYFAST_MERCHANT_ID:-10000100}
+      - PayFast__MerchantKey=${PAYFAST_MERCHANT_KEY:-46f0cd694581a}
+      - PayFast__Passphrase=${PAYFAST_PASSPHRASE:-jt7NOE43FZPn}
+      - PayFast__UseSandbox=${PAYFAST_USE_SANDBOX:-true}
+    ports:
+      - "8080:8080"
+    volumes:
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
+    networks:
+      - hellodoctor-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Nginx Reverse Proxy (Optional - for production-like setup)
+  nginx:
+    image: nginx:alpine
+    container_name: hellodoctor-nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - hellodoctor-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_logs:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  hellodoctor-network:
+    driver: bridge

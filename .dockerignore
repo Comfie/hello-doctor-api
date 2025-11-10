@@ -1,30 +1,70 @@
-**/.classpath
-**/.dockerignore
-**/.env
-**/.git
-**/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
-**/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/azds.yaml
-**/bin
-**/charts
-**/docker-compose*
-**/Dockerfile*
-**/node_modules
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
-LICENSE
-README.md
-!**/.gitignore
-!.git/HEAD
-!.git/config
-!.git/packed-refs
-!.git/refs/heads/**
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs/
+DEPLOYMENT_GUIDE.md
+FLUTTER_API_GUIDE.md
+FLUTTER_CODE_EXAMPLES.md
+PAYMENT_MODULE_CHANGELOG.md
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build artifacts
+**/bin/
+**/obj/
+**/publish/
+**/out/
+
+# User-specific files
+*.user
+*.suo
+*.cache
+*.log
+
+# NuGet
+*.nupkg
+**/packages/
+
+# Test results
+TestResults/
+*.trx
+
+# Node (if any)
+node_modules/
+npm-debug.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Uploads (don't copy to image)
+**/uploads/
+**/wwwroot/uploads/
+
+# Logs
+**/logs/
+*.log
+
+# Database files
+*.db
+*.sqlite
+
+# Docker files themselves
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Scripts
+*.sh
