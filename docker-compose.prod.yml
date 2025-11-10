@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: hellodoctor-db-prod
+    restart: always
+    environment:
+      POSTGRES_DB: hello_doctor_db
+      POSTGRES_USER: hellodoctor_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    networks:
+      - hellodoctor-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hellodoctor_user -d hello_doctor_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Don't expose PostgreSQL to host in production
+    # ports:
+    #   - "5432:5432"
+
+  api:
+    image: hellodoctor-api:latest
+    container_name: hellodoctor-api-prod
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=hello_doctor_db;Username=hellodoctor_user;Password=${DB_PASSWORD};Include Error Detail=false
+      - AppSettings__Secret=${JWT_SECRET}
+      - AppSettings__ValidAudience=${API_URL}
+      - AppSettings__ValidIssuer=${API_URL}
+      - AppSettings__WebUrl=${API_URL}
+      - PayFast__MerchantId=${PAYFAST_MERCHANT_ID}
+      - PayFast__MerchantKey=${PAYFAST_MERCHANT_KEY}
+      - PayFast__Passphrase=${PAYFAST_PASSPHRASE}
+      - PayFast__UseSandbox=${PAYFAST_USE_SANDBOX:-false}
+      - EmailSettings__Host=${EMAIL_HOST}
+      - EmailSettings__Port=${EMAIL_PORT}
+      - EmailSettings__Username=${EMAIL_USERNAME}
+      - EmailSettings__Password=${EMAIL_PASSWORD}
+      - FileStorage__UseS3Storage=${USE_S3_STORAGE:-false}
+    volumes:
+      - app_uploads:/app/uploads
+      - app_logs:/app/logs
+    networks:
+      - hellodoctor-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    # Don't expose API directly in production (Nginx handles this)
+    # ports:
+    #   - "8080:8080"
+
+  nginx:
+    image: nginx:alpine
+    container_name: hellodoctor-nginx-prod
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    networks:
+      - hellodoctor-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+  app_uploads:
+    driver: local
+  app_logs:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  hellodoctor-network:
+    driver: bridge
